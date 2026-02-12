@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from managers import StaffManager, HallManager, PerformanceManager, TicketManager, ResourceManager
+from staff import Actor, Director, Staff
 from exceptions import (
     TheaterException, InvalidSeatException, TicketNotFoundException
 )
@@ -21,53 +22,61 @@ class Action:
         return cls(data["durability"], date)
 
 class Setting(Action):
-    def __init__(self, durability: float, name: str, date: datetime, cast_ids: List[str] = None, director_id: str = None):
+    def __init__(self, durability: float, name: str, date: datetime, cast: List[Actor] = None, director: Director = None):
         super().__init__(durability, date)
         self.name = name
-        self.cast_ids = cast_ids or []
-        self.director_id = director_id
+        self.cast = cast or []
+        self.director = director
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
-        base.update({"name": self.name, "cast_ids": self.cast_ids, "director_id": self.director_id})
+        base.update({
+            "name": self.name,
+            "cast": [a.to_dict() for a in self.cast],
+            "director": self.director.to_dict() if self.director else None
+        })
         return base
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Setting":
         date = datetime.fromisoformat(data.get("date", "")) if data.get("date") else datetime.now()
+        cast = [Actor.from_dict(a) for a in data.get("cast", [])]
+        director = Director.from_dict(data["director"]) if data.get("director") else None
         return cls(
             data["durability"],
             data["name"],
             date,
-            data.get("cast_ids", []),
-            data.get("director_id")
+            cast,
+            director
         )
 
 class Repetition(Action):
-    def __init__(self, durability: float, setting_id: str, importance: str, date: datetime, attendance_ids: List[str] = None):
+    def __init__(self, durability: float, setting: "Setting", importance: str, date: datetime, attendance: List[Staff] = None):
         super().__init__(durability, date)
         self.importance = importance
-        self.setting_id = setting_id  # ID спектакля
-        self.attendance_ids = attendance_ids or []
+        self.setting = setting  # Объект Setting
+        self.attendance = attendance or []
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
         base.update({
             "importance": self.importance,
-            "setting_id": self.setting_id,
-            "attendance_ids": self.attendance_ids
+            "setting": self.setting.to_dict(),  # Сохраняем весь объект
+            "attendance": [s.to_dict() for s in self.attendance]
         })
         return base
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Repetition":
         date = datetime.fromisoformat(data.get("date", "")) if data.get("date") else datetime.now()
+        setting = Setting.from_dict(data["setting"])  # Восстанавливаем объект
+        attendance = [Staff.from_dict(s) for s in data.get("attendance", [])]
         return cls(
             data["durability"],
-            data["setting_id"],
+            setting,
             data["importance"],
             date,
-            data.get("attendance_ids", [])
+            attendance
         )
 
 class Seat:
@@ -85,15 +94,21 @@ class Seat:
         return obj
 
 class Ticket:
-    def __init__(self, ticket_id: str, price: float, setting_id: str, sector: int, row: int, seat: int, hall_id: str):
-        self.ticket_id = ticket_id
+    num = 0
+
+    def __init__(self, price: float, setting: "Setting", sector: int, row: int, seat: int, hall: "AuditoryHall"):
+        self.ticket_id = self.generate_id(setting)
         self.price = price
-        self.setting_id = setting_id
+        self.setting = setting  # Объект Setting
         self.sector = sector
         self.row = row
         self.seat = seat
-        self.hall_id = hall_id
+        self.hall = hall  # Объект AuditoryHall
         self.is_sold = False
+
+    def generate_id(self, setting: "Setting"):
+        Ticket.num += 1
+        return f'{setting.name}_{Ticket.num}'
 
     def sell_ticket(self, hall_manager: "HallManager") -> bool:
         if self.is_sold:
@@ -101,18 +116,13 @@ class Ticket:
                 f"Билет {self.ticket_id} уже продан"
             )
         
-        hall = hall_manager.get_hall_by_id(self.hall_id)
-        if not hall:
-            raise TheaterException(
-                f"Зал с ID {self.hall_id} не найден"
-            )
-        
-        if not hall.is_seat_available(self.sector, self.row, self.seat):
+        # Используем напрямую self.hall
+        if not self.hall.is_seat_available(self.sector, self.row, self.seat):
             raise InvalidSeatException(
                 f"Место сектор {self.sector}, ряд {self.row}, место {self.seat} уже занято"
             )
         
-        hall.occupy_seat(self.sector, self.row, self.seat)
+        self.hall.occupy_seat(self.sector, self.row, self.seat)
         self.is_sold = True
         return True
 
@@ -120,24 +130,25 @@ class Ticket:
         return {
             "ticket_id": self.ticket_id,
             "price": self.price,
-            "setting_id": self.setting_id,
+            "setting": self.setting.to_dict(),
             "sector": self.sector,
             "row": self.row,
             "seat": self.seat,
-            "hall_id": self.hall_id,
+            "hall": self.hall.to_dict(),
             "is_sold": self.is_sold
         }
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Ticket":
+        setting = Setting.from_dict(data["setting"])
+        hall = AuditoryHall.from_dict(data["hall"])
         obj = cls(
-            data["ticket_id"],
             data["price"],
-            data["setting_id"],
+            setting,
             data["sector"],
             data["row"],
             data["seat"],
-            data["hall_id"]
+            hall
         )
         obj.is_sold = data.get("is_sold", False)
         return obj
@@ -156,16 +167,17 @@ class Costume:
         return cls(data["name"], data["size"], data["color"])
 
 class CostumeRoom:
-    def __init__(self, name: str, costume_ids: List[str] = None):
+    def __init__(self, name: str, costumes: List["Costume"] = None):
         self.name = name
-        self.costume_ids = costume_ids or []
+        self.costumes = costumes or []
 
     def to_dict(self) -> Dict[str, Any]:
-        return {"name": self.name, "costume_ids": self.costume_ids}
+        return {"name": self.name, "costumes": [c.to_dict() for c in self.costumes]}
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "CostumeRoom":
-        return cls(data["name"], data.get("costume_ids", []))
+        costumes = [Costume.from_dict(c) for c in data.get("costumes", [])]
+        return cls(data["name"], costumes)
 
 class Stage:
     def __init__(self, name: str, capacity: int, equipment: List[str] = None, is_available: bool = True):

@@ -89,9 +89,9 @@ class PerformanceManager:
 
         manager = cls()
         for setting_data in data.get("settings", []):
-            manager.add_setting(Setting.from_dict(setting_data))
+            manager.add_setting(Setting.from_dict(setting_data))  # Теперь объект
         for rep_data in data.get("repetitions", []):
-            manager.add_repetition(Repetition.from_dict(rep_data))
+            manager.add_repetition(Repetition.from_dict(rep_data))  # Теперь объект
         return manager
 
 
@@ -122,7 +122,7 @@ class TicketManager:
 
         manager = cls()
         for ticket_data in data.get("tickets", []):
-            manager.add_ticket(Ticket.from_dict(ticket_data))
+            manager.add_ticket(Ticket.from_dict(ticket_data))  # Теперь объект
         return manager
 
 
@@ -158,7 +158,7 @@ class ResourceManager:
         for stage_data in data.get("stages", []):
             manager.add_stage(Stage.from_dict(stage_data))
         for room_data in data.get("costume_rooms", []):
-            manager.add_costume_room(CostumeRoom.from_dict(room_data))
+            manager.add_costume_room(CostumeRoom.from_dict(room_data))  # Теперь объект
         for costume_data in data.get("costumes", []):
             manager.add_costume(Costume.from_dict(costume_data))
         halls_data = {"halls": data.get("halls", [])}

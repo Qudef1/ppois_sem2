@@ -36,7 +36,7 @@ class Actor(Staff):
     def __init__(self, name: str, age: int, salary: float, role: str = None):
         super().__init__(name, age, salary)
         self.role = role
-        self.assigned_costume: str = None
+        self.assigned_costume: str = None  # можно хранить объект, если нужно
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
@@ -59,37 +59,41 @@ class Actor(Staff):
 class Director(Staff):
     def __init__(self, name: str, age: int, salary: float):
         super().__init__(name, age, salary)
-        self.directed_settings: List[str] = []  # будем хранить ID спектаклей
+        self.directed_settings: List[Any] = []  # теперь хранит объекты Setting
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
-        base.update({"directed_settings": self.directed_settings})
+        base.update({"directed_settings": [s.to_dict() if hasattr(s, 'to_dict') else s for s in self.directed_settings]})
         return base
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Director":
         obj = cls(data["name"], data["age"], data["salary"])
-        obj.directed_settings = data.get("directed_settings", [])
+        # восстановим объекты спектаклей
+        from theater import Setting
+        obj.directed_settings = [Setting.from_dict(s) if isinstance(s, dict) else s for s in data.get("directed_settings", [])]
         return obj
 
-    def direct_setting(self, setting_id: str):
-        self.directed_settings.append(setting_id)
+    def direct_setting(self, setting: Any):  # принимает объект Setting
+        self.directed_settings.append(setting)
 
 class CostumeDesigner(Staff):
     def __init__(self, name: str, age: int, salary: float):
         super().__init__(name, age, salary)
-        self.created_costumes: List[str] = []  # ID костюмов
+        self.created_costumes: List[Any] = []  # теперь хранит объекты Costume
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
-        base.update({"created_costumes": self.created_costumes})
+        base.update({"created_costumes": [c.to_dict() if hasattr(c, 'to_dict') else c for c in self.created_costumes]})
         return base
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "CostumeDesigner":
         obj = cls(data["name"], data["age"], data["salary"])
-        obj.created_costumes = data.get("created_costumes", [])
+        # восстановим объекты костюмов
+        from theater import Costume
+        obj.created_costumes = [Costume.from_dict(c) if isinstance(c, dict) else c for c in data.get("created_costumes", [])]
         return obj
 
-    def create_costume(self, costume_name: str):
-        self.created_costumes.append(costume_name)
+    def create_costume(self, costume: Any):  # принимает объект Costume
+        self.created_costumes.append(costume)
