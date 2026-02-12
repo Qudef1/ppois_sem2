@@ -36,19 +36,25 @@ class Actor(Staff):
     def __init__(self, name: str, age: int, salary: float, role: str = None):
         super().__init__(name, age, salary)
         self.role = role
+        self.assigned_costume: str = None
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
-        base.update({"role": self.role})
+        base.update({"role": self.role, "assigned_costume": self.assigned_costume})
         return base
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Actor":
-        return cls(data["name"], data["age"], data["salary"], data.get("role"))
+        obj = cls(data["name"], data["age"], data["salary"], data.get("role"))
+        obj.assigned_costume = data.get("assigned_costume")
+        return obj
 
     def attend_repetition(self, repetition_id: str):
         # в реальной системе здесь будет вызов внешней функции
         pass
+
+    def assign_costume(self, costume_id: str):
+        self.assigned_costume = costume_id
 
 class Director(Staff):
     def __init__(self, name: str, age: int, salary: float):

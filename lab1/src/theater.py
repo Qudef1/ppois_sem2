@@ -1,40 +1,50 @@
 import json
 from pathlib import Path
 from typing import List, Dict, Any, Optional
-from managers import StaffManager
-
-class TheaterCapacityError(Exception):
-    pass
+from datetime import datetime
+from managers import StaffManager, HallManager, PerformanceManager, TicketManager, ResourceManager
+from exceptions import (
+    TheaterException, InvalidSeatException, TicketNotFoundException
+)
 
 class Action:
-    def __init__(self, durability: float, date: str):
+    def __init__(self, durability: float, date: datetime):
         self.durability = durability
         self.date = date
 
     def to_dict(self) -> Dict[str, Any]:
-        return {"durability": self.durability, "date": self.date}
+        return {"durability": self.durability, "date": self.date.isoformat()}
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Action":
-        return cls(data["durability"], data["date"])
+        date = datetime.fromisoformat(data["date"]) if isinstance(data["date"], str) else data["date"]
+        return cls(data["durability"], date)
 
 class Setting(Action):
-    def __init__(self, durability: float, name: str, date: str, cast_ids: List[str] = None):
+    def __init__(self, durability: float, name: str, date: datetime, cast_ids: List[str] = None, director_id: str = None):
         super().__init__(durability, date)
         self.name = name
         self.cast_ids = cast_ids or []
+        self.director_id = director_id
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
-        base.update({"name": self.name, "cast_ids": self.cast_ids})
+        base.update({"name": self.name, "cast_ids": self.cast_ids, "director_id": self.director_id})
         return base
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Setting":
-        return cls(data["durability"], data["name"], data["date"], data.get("cast_ids", []))
+        date = datetime.fromisoformat(data.get("date", "")) if data.get("date") else datetime.now()
+        return cls(
+            data["durability"],
+            data["name"],
+            date,
+            data.get("cast_ids", []),
+            data.get("director_id")
+        )
 
 class Repetition(Action):
-    def __init__(self, durability: float, setting_id: str, importance: str, date: str = "", attendance_ids: List[str] = None):
+    def __init__(self, durability: float, setting_id: str, importance: str, date: datetime, attendance_ids: List[str] = None):
         super().__init__(durability, date)
         self.importance = importance
         self.setting_id = setting_id  # ID спектакля
@@ -51,11 +61,12 @@ class Repetition(Action):
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Repetition":
+        date = datetime.fromisoformat(data.get("date", "")) if data.get("date") else datetime.now()
         return cls(
             data["durability"],
             data["setting_id"],
             data["importance"],
-            data.get("date", ""),
+            date,
             data.get("attendance_ids", [])
         )
 
@@ -85,13 +96,25 @@ class Ticket:
         self.is_sold = False
 
     def sell_ticket(self, hall_manager: "HallManager") -> bool:
-        if not self.is_sold:
-            hall = hall_manager.get_hall_by_id(self.hall_id)
-            if hall and hall.is_seat_available(self.sector, self.row, self.seat):
-                hall.occupy_seat(self.sector, self.row, self.seat)
-                self.is_sold = True
-                return True
-        return False
+        if self.is_sold:
+            raise TheaterException(
+                f"Билет {self.ticket_id} уже продан"
+            )
+        
+        hall = hall_manager.get_hall_by_id(self.hall_id)
+        if not hall:
+            raise TheaterException(
+                f"Зал с ID {self.hall_id} не найден"
+            )
+        
+        if not hall.is_seat_available(self.sector, self.row, self.seat):
+            raise InvalidSeatException(
+                f"Место сектор {self.sector}, ряд {self.row}, место {self.seat} уже занято"
+            )
+        
+        hall.occupy_seat(self.sector, self.row, self.seat)
+        self.is_sold = True
+        return True
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -188,14 +211,18 @@ class AuditoryHall:
     def is_seat_available(self, sector: int, row: int, seat: int) -> bool:
         if 0 <= sector < self.sectors and 0 <= row < self.rows_per_sector and 0 <= seat < self.seats_per_row:
             return not self.seats[sector][row][seat].is_occupied
-        return False
+        raise InvalidSeatException(
+            f"Неверные координаты места: сектор {sector}, ряд {row}, место {seat}"
+        )
 
     def occupy_seat(self, sector: int, row: int, seat: int) -> bool:
-        if self.is_seat_available(sector, row, seat):
-            self.seats[sector][row][seat].is_occupied = True
-            self.audience_count += 1
-            return True
-        return False
+        if not self.is_seat_available(sector, row, seat):
+            raise InvalidSeatException(
+                f"Место уже занято: сектор {sector}, ряд {row}, место {seat}"
+            )
+        self.seats[sector][row][seat].is_occupied = True
+        self.audience_count += 1
+        return True
 
     def to_dict(self) -> Dict[str, Any]:
         seats_serialized = [
@@ -236,112 +263,6 @@ class AuditoryHall:
         hall.audience_count = data.get("audience_count", 0)
         return hall
 
-class HallManager:
-    def __init__(self):
-        self.halls: List[AuditoryHall] = []
-
-    def add_hall(self, hall: AuditoryHall):
-        self.halls.append(hall)
-
-    def get_hall_by_id(self, hall_id: str) -> Optional[AuditoryHall]:
-        for hall in self.halls:
-            if hall.hall_id == hall_id:
-                return hall
-        return None
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {"halls": [h.to_dict() for h in self.halls]}
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "HallManager":
-        manager = cls()
-        for hall_data in data.get("halls", []):
-            hall = AuditoryHall.from_dict(hall_data)
-            manager.add_hall(hall)
-        return manager
-
-class PerformanceManager:
-    def __init__(self):
-        self.settings: List[Setting] = []
-        self.repetitions: List[Repetition] = []
-
-    def add_setting(self, setting: Setting):
-        self.settings.append(setting)
-
-    def add_repetition(self, repetition: Repetition):
-        self.repetitions.append(repetition)
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "settings": [s.to_dict() for s in self.settings],
-            "repetitions": [r.to_dict() for r in self.repetitions]
-        }
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "PerformanceManager":
-        manager = cls()
-        for setting_data in data.get("settings", []):
-            manager.add_setting(Setting.from_dict(setting_data))
-        for rep_data in data.get("repetitions", []):
-            manager.add_repetition(Repetition.from_dict(rep_data))
-        return manager
-
-class TicketManager:
-    def __init__(self):
-        self.tickets: List[Ticket] = []
-
-    def add_ticket(self, ticket: Ticket):
-        self.tickets.append(ticket)
-
-    def get_all_tickets(self) -> List[Ticket]:
-        return self.tickets
-
-    def sell_ticket(self, ticket_id: str, hall_manager: HallManager) -> bool:
-        ticket = next((t for t in self.tickets if t.ticket_id == ticket_id), None)
-        if ticket:
-            return ticket.sell_ticket(hall_manager)
-        return False
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {"tickets": [t.to_dict() for t in self.tickets]}
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "TicketManager":
-        manager = cls()
-        for ticket_data in data.get("tickets", []):
-            manager.add_ticket(Ticket.from_dict(ticket_data))
-        return manager
-
-class ResourceManager:
-    def __init__(self):
-        self.stages: List[Stage] = []
-        self.costume_rooms: List[CostumeRoom] = []
-        self.hall_manager = HallManager()
-
-    def add_stage(self, stage: Stage):
-        self.stages.append(stage)
-
-    def add_costume_room(self, room: CostumeRoom):
-        self.costume_rooms.append(room)
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "stages": [s.to_dict() for s in self.stages],
-            "costume_rooms": [cr.to_dict() for cr in self.costume_rooms],
-            "halls": self.hall_manager.to_dict()["halls"]  # вложенный объект
-        }
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ResourceManager":
-        manager = cls()
-        for stage_data in data.get("stages", []):
-            manager.add_stage(Stage.from_dict(stage_data))
-        for room_data in data.get("costume_rooms", []):
-            manager.add_costume_room(CostumeRoom.from_dict(room_data))
-        # восстановить залы
-        halls_data = {"halls": data.get("halls", [])}
-        manager.hall_manager = HallManager.from_dict(halls_data)
-        return manager
 
 class Theater:
     def __init__(self, name: str):
@@ -351,28 +272,86 @@ class Theater:
         self.ticket_manager = TicketManager()
         self.resource_manager = ResourceManager()
 
+    @staticmethod
+    def _get_data_dir() -> Path:
+        """Получить директорию для данных"""
+        # Ищем директорию data относительно текущего скрипта
+        current = Path.cwd()
+        # Проверяем если мы в src/, tests/ или в корне lab1/
+        if (current / "data").exists():
+            return current / "data"
+        elif (current.parent / "data").exists():
+            return current.parent / "data"
+        else:
+            # Создаём data если её нет
+            data_dir = current / "data"
+            data_dir.mkdir(exist_ok=True)
+            return data_dir
+
     def save_to_file(self, filename: str = "theater_state.json"):
-        data = {
-            "name": self.name,
-            "staff_manager": self.staff_manager.to_dict(),
-            "performance_manager": self.performance_manager.to_dict(),
-            "ticket_manager": self.ticket_manager.to_dict(),
-            "resource_manager": self.resource_manager.to_dict()
-        }
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
+        try:
+            # Если это просто имя файла, сохраняем в data/
+            filepath = Path(filename)
+            if filepath.is_absolute() or "/" in filename or "\\" in filename:
+                # Это полный путь
+                target_file = Path(filename)
+            else:
+                # Это просто имя файла, сохраняем в data/
+                target_file = self._get_data_dir() / filename
+                target_file.parent.mkdir(parents=True, exist_ok=True)
+            
+            data = {
+                "name": self.name,
+                "staff_manager": self.staff_manager.to_dict(),
+                "performance_manager": self.performance_manager.to_dict(),
+                "ticket_manager": self.ticket_manager.to_dict(),
+                "resource_manager": self.resource_manager.to_dict()
+            }
+            with open(target_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+        except (IOError, OSError) as e:
+            raise TheaterException(
+                f"Ошибка при сохранении файла {filename}: {e}"
+            )
 
     @classmethod
     def load_from_file(cls, filename: str = "theater_state.json") -> "Theater":
-        if not Path(filename).exists():
-            raise FileNotFoundError(f"Файл состояния не найден: {filename}")
+        # Если это просто имя файла, ищем в data/
+        filepath = Path(filename)
+        if filepath.is_absolute() or "/" in filename or "\\" in filename:
+            # Это полный путь
+            target_file = Path(filename)
+        else:
+            # Это просто имя файла, ищем в data/
+            current = Path.cwd()
+            if (current / "data" / filename).exists():
+                target_file = current / "data" / filename
+            elif (current.parent / "data" / filename).exists():
+                target_file = current.parent / "data" / filename
+            else:
+                target_file = Path(filename)
         
-        with open(filename, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        theater = cls(data["name"])
-        theater.staff_manager = StaffManager.from_dict(data["staff_manager"])
-        theater.performance_manager = PerformanceManager.from_dict(data["performance_manager"])
-        theater.ticket_manager = TicketManager.from_dict(data["ticket_manager"])
-        theater.resource_manager = ResourceManager.from_dict(data["resource_manager"])
-        return theater
+        if not target_file.exists():
+            raise TheaterException(
+                f"Файл состояния не найден: {filename}"
+            )
+        
+        try:
+            with open(target_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except (IOError, OSError, json.JSONDecodeError) as e:
+            raise TheaterException(
+                f"Ошибка при загрузке файла {filename}: {e}"
+            )
+        
+        try:
+            theater = cls(data["name"])
+            theater.staff_manager = StaffManager.from_dict(data["staff_manager"])
+            theater.performance_manager = PerformanceManager.from_dict(data["performance_manager"])
+            theater.ticket_manager = TicketManager.from_dict(data["ticket_manager"])
+            theater.resource_manager = ResourceManager.from_dict(data["resource_manager"])
+            return theater
+        except KeyError as e:
+            raise TheaterException(
+                f"Некорректный формат состояния в файле {filename}. Отсутствует ключ: {e}"
+            )
