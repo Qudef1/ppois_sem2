@@ -1,0 +1,198 @@
+@startuml
+package "Theater System" {
+  class Theater {
+    - name: str
+    - staff_manager: StaffManager
+    - performance_manager: PerformanceManager
+    - ticket_manager: TicketManager
+    - resource_manager: ResourceManager
+    + save_to_file(filename: str)
+    + load_from_file(filename: str): Theater
+  }
+
+  class StaffManager {
+    - staff: List[Staff]
+    + add_staff(staff_member: Staff)
+    + get_staff(): List[Staff]
+    + to_dict(): Dict
+    + from_dict(data: Dict): StaffManager
+  }
+
+  class PerformanceManager {
+    - settings: List[Setting]
+    - repetitions: List[Repetition]
+    + add_setting(setting: Setting)
+    + add_repetition(repetition: Repetition)
+    + to_dict(): Dict
+    + from_dict(data: Dict): PerformanceManager
+  }
+
+  class TicketManager {
+    - tickets: List[Ticket]
+    + add_ticket(ticket: Ticket)
+    + sell_ticket(ticket_id: str, hall_manager: HallManager): bool
+    + to_dict(): Dict
+    + from_dict(data: Dict): TicketManager
+  }
+
+  class ResourceManager {
+    - stages: List[Stage]
+    - costume_rooms: List[CostumeRoom]
+    - hall_manager: HallManager
+    + add_stage(stage: Stage)
+    + add_costume_room(room: CostumeRoom)
+    + to_dict(): Dict
+    + from_dict(data: Dict): ResourceManager
+  }
+
+  class Person {
+    - name: str
+    - age: int
+    + get_age(): int
+    + to_dict(): Dict
+    + from_dict(data: Dict): Person
+  }
+
+  class Staff {
+    - salary: float
+    + get_salary(): float
+    + to_dict(): Dict
+    + from_dict(data: Dict): Staff
+  }
+
+  class Actor {
+    - role: str
+    + attend_repetition(repetition_id: str)
+    + to_dict(): Dict
+    + from_dict(data: Dict): Actor
+  }
+
+  class Director {
+    - directed_settings: List[str]
+    + direct_setting(setting_id: str)
+    + to_dict(): Dict
+    + from_dict(data: Dict): Director
+  }
+
+  class CostumeDesigner {
+    - created_costumes: List[str]
+    + create_costume(costume_name: str)
+    + to_dict(): Dict
+    + from_dict(data: Dict): CostumeDesigner
+  }
+
+  class Setting {
+    - name: str
+    - cast_ids: List[str]
+    + to_dict(): Dict
+    + from_dict(data: Dict): Setting
+  }
+
+  class Repetition {
+    - setting_id: str
+    - importance: str
+    - attendance_ids: List[str]
+    + to_dict(): Dict
+    + from_dict(data: Dict): Repetition
+  }
+
+  class Ticket {
+    - ticket_id: str
+    - price: float
+    - setting_id: str
+    - sector: int
+    - row: int
+    - seat: int
+    - hall_id: str
+    - is_sold: bool
+    + sell_ticket(hall_manager: HallManager): bool
+    + to_dict(): Dict
+    + from_dict(data: Dict): Ticket
+  }
+
+  class Stage {
+    - name: str
+    - capacity: int
+    - equipment: List[str]
+    - is_available: bool
+    + to_dict(): Dict
+    + from_dict(data: Dict): Stage
+  }
+
+  class CostumeRoom {
+    - name: str
+    - costume_ids: List[str]
+    + to_dict(): Dict
+    + from_dict(data: Dict): CostumeRoom
+  }
+
+  class AuditoryHall {
+    - name: str
+    - sectors: int
+    - rows_per_sector: int
+    - seats_per_row: int
+    - hall_id: str
+    - seats: List[List[List[Seat]]]
+    + is_seat_available(...): bool
+    + occupy_seat(...): bool
+    + to_dict(): Dict
+    + from_dict(data: Dict): AuditoryHall
+  }
+
+  class HallManager {
+    - halls: List[AuditoryHall]
+    + add_hall(hall: AuditoryHall)
+    + get_hall_by_id(hall_id: str): AuditoryHall
+    + to_dict(): Dict
+    + from_dict(data: Dict): HallManager
+  }
+
+  class Seat {
+    - seat_number: int
+    - is_occupied: bool
+    + to_dict(): Dict
+    + from_dict(data: Dict): Seat
+  }
+
+  ' --- Наследование ---
+  Person <|-- Staff
+  Staff <|-- Actor
+  Staff <|-- Director
+  Staff <|-- CostumeDesigner
+
+  ' --- Композиция ---
+  Theater *-- StaffManager
+  Theater *-- PerformanceManager
+  Theater *-- TicketManager
+  Theater *-- ResourceManager
+  ResourceManager *-- HallManager
+  AuditoryHall *-- Seat
+
+  ' --- Ассоциации ---
+  StaffManager o-- Staff
+  PerformanceManager o-- Setting
+  PerformanceManager o-- Repetition
+  TicketManager o-- Ticket
+  ResourceManager o-- Stage
+  ResourceManager o-- CostumeRoom
+  HallManager o-- AuditoryHall
+  Actor ..> Repetition : attends
+  Director ..> Setting : directs
+  CostumeDesigner ..> Costume : creates
+
+  class Costume {
+    - name: str
+    - size: str
+    - color: str
+    + to_dict(): Dict
+    + from_dict(data: Dict): Costume
+  }
+
+  CostumeDesigner o-- Costume
+
+
+}
+
+
+' ctrl+shift+p -> preview current diagram
+@enduml
