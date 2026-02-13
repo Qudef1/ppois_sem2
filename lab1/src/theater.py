@@ -103,7 +103,7 @@ class Ticket:
         self.sector = sector
         self.row = row
         self.seat = seat
-        self.hall = hall  # Объект AuditoryHall
+        self.hall_id = hall.hall_id  # Объект AuditoryHall
         self.is_sold = False
 
     def generate_id(self, setting: "Setting"):
@@ -134,21 +134,20 @@ class Ticket:
             "sector": self.sector,
             "row": self.row,
             "seat": self.seat,
-            "hall": self.hall.to_dict(),
+            "hall_id": self.hall_id,
             "is_sold": self.is_sold
         }
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Ticket":
         setting = Setting.from_dict(data["setting"])
-        hall = AuditoryHall.from_dict(data["hall"])
         obj = cls(
             data["price"],
             setting,
             data["sector"],
             data["row"],
             data["seat"],
-            hall
+            data["hall_id"]
         )
         obj.is_sold = data.get("is_sold", False)
         return obj
