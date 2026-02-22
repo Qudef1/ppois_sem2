@@ -2,7 +2,7 @@ import json
 import os
 import glob
 from typing import Optional
-from theater import Theater, Setting, AuditoryHall, Ticket, Costume, Stage
+from theater import Theater, Setting, AuditoryHall, Ticket, Costume
 from staff import Director, Actor
 from managers import StaffManager, HallManager, PerformanceManager, TicketManager
 from exception import *
@@ -33,19 +33,16 @@ class TheaterCLI:
         print("12. Создать костюм")
         print("13. Назначить костюм актеру")
         print("14. Показать доступные билеты")
-        print("15. Выступление актера на сцене")
         print("0. Выход")
         print("="*50)
 
     def get_user_input(self, msg: str) -> str:
         return input(msg).strip()
 
-    def get_validated_int(self, msg: str, min_val: int = None, max_val: int = None, allow_empty: bool = False) -> Optional[int]:
+    def get_validated_int(self, msg: str, min_val: int = None, max_val: int = None) -> int:
         """Запрашивает целое число с проверкой ввода."""
         while True:
             value = self.get_user_input(msg)
-            if allow_empty and value == "":
-                return None
             try:
                 result = int(value)
                 if min_val is not None and result < min_val:
@@ -58,49 +55,40 @@ class TheaterCLI:
             except ValueError:
                 print("Ошибка: введите целое число")
 
-    def get_validated_float(self, msg: str, min_val: float = None, max_val: float = None, allow_empty: bool = False) -> Optional[float]:
+    def get_validated_float(self, msg: str, min_val: float = None) -> float:
         """Запрашивает число с плавающей точкой с проверкой ввода."""
         while True:
             value = self.get_user_input(msg)
-            if allow_empty and value == "":
-                return None
             try:
                 result = float(value)
                 if min_val is not None and result < min_val:
                     print(f"Ошибка: значение должно быть не меньше {min_val}")
                     continue
-                if max_val is not None and result > max_val:
-                    print(f"Ошибка: значение должно быть не больше {max_val}")
-                    continue
                 return result
             except ValueError:
                 print("Ошибка: введите число (например, 100.50)")
 
-    def get_validated_date(self, msg: str, allow_empty: bool = False) -> Optional[datetime]:
+    def get_validated_date(self, msg: str) -> datetime:
         """Запрашивает дату в формате ГГГГ-ММ-ДД с проверкой ввода."""
         while True:
             value = self.get_user_input(msg)
-            if allow_empty and value == "":
-                return None
             try:
                 return datetime.fromisoformat(value.replace('/', '-'))
             except ValueError:
                 print("Ошибка: введите дату в формате ГГГГ-ММ-ДД (например, 2025-06-15)")
 
-    def get_validated_choice(self, msg: str, options: list, allow_empty: bool = False) -> Optional[int]:
+    def get_validated_choice(self, msg: str, options_count: int) -> int:
         """Запрашивает выбор из списка опций с проверкой ввода."""
         while True:
             value = self.get_user_input(msg)
-            if allow_empty and value == "":
-                return None
             try:
                 result = int(value)
-                if 1 <= result <= len(options):
+                if 1 <= result <= options_count:
                     return result - 1  # Возвращаем индекс (0-based)
                 else:
-                    print(f"Ошибка: выберите число от 1 до {len(options)}")
+                    print(f"Ошибка: выберите число от 1 до {options_count}")
             except ValueError:
-                print(f"Ошибка: введите число от 1 до {len(options)}")
+                print(f"Ошибка: введите число от 1 до {options_count}")
 
     def add_hall(self):
         print("\n--- Добавление нового зала ---")
@@ -148,9 +136,7 @@ class TheaterCLI:
         for i, director in enumerate(directors):
             print(f"{i+1}. {director.name}")
 
-        director_choice = self.get_validated_choice("Выберите номер режиссера: ", directors)
-        if director_choice is None:
-            return
+        director_choice = self.get_validated_choice("Выберите номер режиссера: ", len(directors))
         selected_director = directors[director_choice]
 
         setting = Setting(durability, name, date, selected_director)
@@ -224,24 +210,22 @@ class TheaterCLI:
             print("0. Назад в главное меню")
             print("="*50)
 
-            choice = self.get_user_input("Выберите раздел (0-6): ")
+            choice = self.get_validated_int("Выберите раздел (0-6): ", min_val=0, max_val=6)
 
-            if choice == "1":
+            if choice == 1:
                 self._show_summary()
-            elif choice == "2":
+            elif choice == 2:
                 self._show_staff_detailed()
-            elif choice == "3":
+            elif choice == 3:
                 self._show_halls_detailed()
-            elif choice == "4":
+            elif choice == 4:
                 self._show_settings_detailed()
-            elif choice == "5":
+            elif choice == 5:
                 self._show_tickets_detailed()
-            elif choice == "6":
+            elif choice == 6:
                 self._show_resources_detailed()
-            elif choice == "0":
+            elif choice == 0:
                 break
-            else:
-                print("Неверный выбор. Пожалуйста, выберите число от 0 до 6.")
 
     def _show_summary(self):
         print("\n--- Общая сводка ---")
@@ -463,14 +447,11 @@ class TheaterCLI:
             print(f"  0. Ввести путь вручную")
             
             choice = self.get_validated_int("Выберите файл (номер) или 0 для ручного ввода: ", min_val=0, max_val=len(available))
-            if choice is None:
-                return
             if choice == 0:
                 filepath = self.get_user_input("Введите путь к файлу для загрузки: ")
             else:
                 filepath = available[choice - 1]
         else:
-            print("JSON-файлы не найдены в стандартных директориях.")
             filepath = self.get_user_input("Введите путь к файлу для загрузки: ")
 
         if not filepath:
@@ -483,7 +464,7 @@ class TheaterCLI:
         except FileNotFoundError:
             print(f"Ошибка: файл '{filepath}' не найден")
         except json.JSONDecodeError:
-            print(f"Ошибка: файл '{filepath}' содержит некорректный JSON")
+            print(f"Ошибка: файл содержит некорректный JSON")
         except Exception as e:
             print(f"Ошибка при загрузке: {e}")
 
@@ -501,9 +482,7 @@ class TheaterCLI:
             tickets_info = f", билетов: {len(setting.tickets)}" if setting.tickets else ""
             print(f"{i+1}. {setting.name} {hall_info}{tickets_info}")
 
-        setting_choice = self.get_validated_choice("Выберите номер постановки: ", settings)
-        if setting_choice is None:
-            return
+        setting_choice = self.get_validated_choice("Выберите номер постановки: ", len(settings))
         selected_setting = settings[setting_choice]
 
         if selected_setting.hall:
@@ -522,9 +501,7 @@ class TheaterCLI:
         for i, hall in enumerate(halls):
             print(f"{i+1}. {hall.name} (вместимость: {hall.capacity})")
 
-        hall_choice = self.get_validated_choice("Выберите номер зала: ", halls)
-        if hall_choice is None:
-            return
+        hall_choice = self.get_validated_choice("Выберите номер зала: ", len(halls))
         selected_hall = halls[hall_choice]
 
         base_price = self.get_validated_float("Введите базовую цену билета (руб): ", min_val=1)
@@ -546,9 +523,7 @@ class TheaterCLI:
             role_info = f" ({actor.role})" if actor.role else ""
             print(f"{i+1}. {actor.name}{role_info}")
 
-        actor_choice = self.get_validated_choice("Выберите номер актера: ", actors)
-        if actor_choice is None:
-            return
+        actor_choice = self.get_validated_choice("Выберите номер актера: ", len(actors))
         selected_actor = actors[actor_choice]
 
         # Выбор постановки
@@ -562,9 +537,7 @@ class TheaterCLI:
             cast_count = len(setting.cast) if hasattr(setting, 'cast') else 0
             print(f"{i+1}. {setting.name} (актеров в постановке: {cast_count})")
 
-        setting_choice = self.get_validated_choice("Выберите номер постановки: ", settings)
-        if setting_choice is None:
-            return
+        setting_choice = self.get_validated_choice("Выберите номер постановки: ", len(settings))
         selected_setting = settings[setting_choice]
 
         # Добавляем актера к постановке
@@ -605,9 +578,7 @@ class TheaterCLI:
             costume_count = len(costumes) if costumes else 0
             print(f"{i+1}. {actor.name} (костюмов: {costume_count})")
 
-        actor_choice = self.get_validated_choice("Выберите номер актера: ", actors)
-        if actor_choice is None:
-            return
+        actor_choice = self.get_validated_choice("Выберите номер актера: ", len(actors))
         selected_actor = actors[actor_choice]
 
         # Выбор костюма
@@ -620,9 +591,7 @@ class TheaterCLI:
         for i, costume in enumerate(costumes):
             print(f"{i+1}. {costume.name} (размер: {costume.size}, цвет: {costume.color})")
 
-        costume_choice = self.get_validated_choice("Выберите номер костюма: ", costumes)
-        if costume_choice is None:
-            return
+        costume_choice = self.get_validated_choice("Выберите номер костюма: ", len(costumes))
         selected_costume = costumes[costume_choice]
 
         # Назначаем костюм актеру
@@ -651,67 +620,9 @@ class TheaterCLI:
             for ticket in available[:20]:
                 setting_name = ticket.setting.name if ticket.setting else "Неизвестно"
                 print(f"{ticket.ticket_id:<15} {setting_name:<20} {ticket.sector:<8} {ticket.row:<6} {ticket.seat:<6} {ticket.price:.0f} руб.")
-            
+
             if len(available) > 20:
                 print(f"... и ещё {len(available) - 20} билетов")
-
-    def actor_performance(self):
-        print("\n--- Выступление актера на сцене ---")
-        # Выбор актера
-        actors = [s for s in self.theater.staff_manager.staff if isinstance(s, Actor)]
-        if not actors:
-            print("Нет доступных актеров. Сначала добавьте актера.")
-            return
-
-        print("Доступные актеры:")
-        for i, actor in enumerate(actors):
-            role_info = f" ({actor.role})" if actor.role else ""
-            print(f"{i+1}. {actor.name}{role_info}")
-
-        actor_choice = self.get_validated_choice("Выберите номер актера: ", actors)
-        if actor_choice is None:
-            return
-        selected_actor = actors[actor_choice]
-
-        # Выбор сцены
-        stages = self.theater.resource_manager.stages
-        if not stages:
-            print("Нет доступных сцен. Создадим сцену по умолчанию.")
-            default_stage = Stage("Main Stage", 500, ["Lights", "Sound"])
-            self.theater.resource_manager.add_stage(default_stage)
-            stages = self.theater.resource_manager.stages
-            print("Сцена 'Main Stage' создана автоматически.")
-
-        print("Доступные сцены:")
-        for i, stage in enumerate(stages):
-            status = "Доступна" if stage.is_available else "Занята"
-            print(f"{i+1}. {stage.name} ({status})")
-
-        stage_choice = self.get_validated_choice("Выберите номер сцены: ", stages)
-        if stage_choice is None:
-            return
-        selected_stage = stages[stage_choice]
-
-        # Выбор постановки (опционально)
-        settings = self.theater.performance_manager.settings
-        selected_setting = None
-        if settings:
-            print("\nДоступные постановки:")
-            for i, setting in enumerate(settings):
-                print(f"{i+1}. {setting.name}")
-
-            setting_choice = self.get_validated_choice("Выберите номер постановки (Enter для пропуска): ", settings, allow_empty=True)
-            if setting_choice is not None:
-                selected_setting = settings[setting_choice]
-
-        # Выступление актера
-        print("\n" + "="*60)
-        if selected_setting:
-            output = selected_actor.perform_on_stage(selected_stage, selected_setting)
-        else:
-            output = selected_actor.perform_on_stage(selected_stage)
-        print(output)
-        print("="*60)
 
     def change_theater_name(self):
         print("\n--- Изменение названия театра ---")
@@ -727,9 +638,7 @@ class TheaterCLI:
     def run(self):
         while True:
             self.display_menu()
-            choice = self.get_validated_int("Выберите действие (0-15): ", min_val=0, max_val=15)
-            if choice is None:
-                continue
+            choice = self.get_validated_int("Выберите действие (0-14): ", min_val=0, max_val=14)
 
             if choice == 1:
                 self.add_hall()
@@ -759,12 +668,9 @@ class TheaterCLI:
                 self.assign_costume_to_actor()
             elif choice == 14:
                 self.show_available_tickets()
-            elif choice == 15:
-                self.actor_performance()
             elif choice == 0:
                 print("Выход из программы...")
                 break
-
 
 if __name__ == "__main__":
     cli = TheaterCLI()
