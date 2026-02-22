@@ -1,0 +1,54 @@
+@startuml
+!theme plain
+
+[*] --> TheaterCreated: Create Theater
+
+state TheaterCreated {
+    [*] --> Idle
+    
+    Idle: Waiting for user input
+    
+    Idle --> AddStaff: Add Staff
+    Idle --> AddHall: Add Hall
+    Idle --> AddSetting: Add Setting
+    Idle --> CreateTicket: Create Ticket
+    Idle --> SellTicket: Sell Ticket
+    Idle --> SaveState: Save State
+    Idle --> LoadState: Load State
+    Idle --> ShowInfo: Show Info
+    
+    AddStaff --> Idle: Staff Added
+    AddHall --> Idle: Hall Added
+    AddSetting --> Idle: Setting Added
+    CreateTicket --> Idle: Ticket Created
+    SellTicket --> Idle: Ticket Sold
+    SaveState --> Idle: State Saved
+    LoadState --> Idle: State Loaded
+    ShowInfo --> Idle: Info Shown
+}
+
+AddStaff --> StaffAdded: Staff Added
+StaffAdded --> Idle: Continue
+
+AddHall --> HallAdded: Hall Added
+HallAdded --> Idle: Continue
+
+AddSetting --> SettingAdded: Setting Added
+SettingAdded --> Idle: Continue
+
+CreateTicket --> TicketCreated: Ticket Created
+TicketCreated --> Idle: Continue
+
+SellTicket --> TicketSold: Ticket Sold
+TicketSold --> Idle: Continue
+
+SaveState --> StateSaved: State Saved
+StateSaved --> Idle: Continue
+
+LoadState --> StateLoaded: State Loaded
+StateLoaded --> Idle: Continue
+
+ShowInfo --> InfoShown: Info Shown
+InfoShown --> Idle: Continue
+
+@enduml
