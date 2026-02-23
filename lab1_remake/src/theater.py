@@ -2,39 +2,52 @@ import json
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional
+from enum import Enum
 import staff
 from exception import InvalidSeatException, TheaterException
 from managers import TicketManager
 
+
+class ActionType(str, Enum):
+    """Перечисление типов действий для сериализации."""
+    ACTION = "action"
+    SETTING = "setting"
+    REPETITION = "repetition"
+
+
 class Action:
-    def __init__(self,durability:float,name:str,date:datetime):
+    __type__ = "action"
+    
+    def __init__(self, durability: float, name: str, date: datetime):
         self.durability = durability
         self.name = name
         self.date = date
 
-    def to_dict(self) -> Dict[str,Any]:
+    def to_dict(self) -> Dict[str, Any]:
         date_str = self.date.isoformat() if isinstance(self.date, datetime) else str(self.date)
-        return {"durability":self.durability,"name":self.name,"date":date_str}
-    
+        return {"__type__": self.__type__, "durability": self.durability, "name": self.name, "date": date_str}
+
     @classmethod
-    def from_dict(cls,data: Dict[str,Any]):
+    def from_dict(cls, data: Dict[str, Any]):
         try:
-            date = datetime.fromisoformat(data["date"]) if isinstance(data["date"],str) else data["date"]
-        except:
+            date = datetime.fromisoformat(data["date"]) if isinstance(data["date"], str) else data["date"]
+        except (ValueError, KeyError):
             date = datetime.now()
 
-        return cls(data["durability"],data["name"],date)
+        return cls(data["durability"], data["name"], date)
 
 class Setting(Action):
-    def __init__(self,durability:float,name:str,date:datetime,director:staff.Director):
-        super().__init__(durability,name,date)
+    __type__ = "setting"
+    
+    def __init__(self, durability: float, name: str, date: datetime, director: staff.Director):
+        super().__init__(durability, name, date)
         self.director = director
         self.cast: List[staff.Actor] = []
         self.hall: Optional["AuditoryHall"] = None
         self.tickets: List["Ticket"] = []
-        self.base_price: float = 100.0  # Базовая цена билета
+        self.base_price: float = 100.0
 
-    def add_cast(self,actor:staff.Actor):
+    def add_cast(self, actor: staff.Actor):
         self.cast.append(actor)
 
     def bind_to_hall(self, hall: "AuditoryHall", base_price: float = 100.0) -> List["Ticket"]:
@@ -42,14 +55,13 @@ class Setting(Action):
         self.hall = hall
         self.base_price = base_price
         self.tickets = []
-        
+
         for sector_idx in range(hall.sectors):
             for row_idx in range(hall.rows_per_sector):
                 for seat_idx in range(hall.seats_per_row):
-                    # Цена может зависеть от сектора (чем дальше, тем дешевле)
-                    price_multiplier = 1.0 - (sector_idx * 0.2)  # -20% за каждый сектор
+                    price_multiplier = 1.0 - (sector_idx * 0.2)
                     price = max(self.base_price * price_multiplier, self.base_price * 0.5)
-                    
+
                     ticket = Ticket(
                         price=price,
                         setting=self,
@@ -60,12 +72,13 @@ class Setting(Action):
                         hall_obj=hall
                     )
                     self.tickets.append(ticket)
-        
+
         return self.tickets
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
         base.update({
+            "__type__": ActionType.SETTING.value,
             "cast": [a.to_dict() for a in self.cast],
             "director": self.director.to_dict(),
             "hall_id": self.hall.hall_id if self.hall else None,
@@ -75,10 +88,10 @@ class Setting(Action):
         return base
 
     @classmethod
-    def from_dict(cls, data:Dict[str,Any]):
+    def from_dict(cls, data: Dict[str, Any]):
         date = datetime.fromisoformat(data.get("date", "")) if data.get("date") else datetime.now()
         cast = [staff.Actor.from_dict(a) for a in data.get("cast", [])]
-        director = staff.Director.from_dict(data["director"]) if data["director"] else None
+        director = staff.Director.from_dict(data["director"]) if data.get("director") else None
         setting = cls(
             data["durability"],
             data["name"],
@@ -87,7 +100,6 @@ class Setting(Action):
         )
         setting.cast = cast
         setting.base_price = data.get("base_price", 100.0)
-        # Зал будет привязан позже через link_hall
         setting._pending_hall_id = data.get("hall_id")
         setting._pending_tickets_data = data.get("tickets", [])
         return setting
@@ -95,31 +107,33 @@ class Setting(Action):
     def link_hall_and_tickets(self, hall: "AuditoryHall", ticket_manager: "TicketManager"):
         """Привязывает зал и восстанавливает билеты после загрузки из JSON."""
         self.hall = hall
-        from managers import TicketManager
         for ticket_data in self._pending_tickets_data:
             ticket = Ticket.from_dict(ticket_data)
             ticket.link_hall(hall)
-            ticket.link_setting(self)  # Привязываем постановку к билету
+            ticket.link_setting(self)
             ticket_manager.add_ticket(ticket)
             self.tickets.append(ticket)
         self._pending_tickets_data = []
         self._pending_hall_id = None
     
 class Repetition(Action):
-    def __init__(self, durability, name, date,setting:Setting):
+    __type__ = "repetition"
+    
+    def __init__(self, durability: float, name: str, date: datetime, setting: Setting):
         super().__init__(durability, name, date)
         self.setting = setting
         self.attendance_list: List[staff.Staff] = []
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
         base.update({
+            "__type__": ActionType.REPETITION.value,
             "setting": self.setting.to_dict() if hasattr(self.setting, 'to_dict') else self.setting,
             "attendance_list": [s.to_dict() for s in self.attendance_list]
         })
         return base
 
-    def check_list(self,actor:staff.Staff):
+    def check_list(self, actor: staff.Staff):
         self.attendance_list.append(actor)
 
     @classmethod
@@ -138,21 +152,24 @@ class Repetition(Action):
         return rep
     
 class Seat:
-    def __init__(self,seat_number:int):
+    __type__ = "seat"
+    
+    def __init__(self, seat_number: int):
         self.seat_number = seat_number
         self.is_occupied = False
 
-    def to_dict(self):
-        return {"seat_number":self.seat_number,"is_occupied":self.is_occupied}
-    
+    def to_dict(self) -> Dict[str, Any]:
+        return {"__type__": self.__type__, "seat_number": self.seat_number, "is_occupied": self.is_occupied}
+
     @classmethod
-    def from_dict(cls,data:Dict[str,Any]):
+    def from_dict(cls, data: Dict[str, Any]) -> "Seat":
         seat = cls(data["seat_number"])
         seat.is_occupied = data.get("is_occupied", False)
         return seat
     
 class Ticket:
-    _counter = 0  
+    __type__ = "ticket"
+    _counter = 0
 
     @classmethod
     def _next_id(cls) -> str:
@@ -162,8 +179,7 @@ class Ticket:
 
     @classmethod
     def _update_counter(cls, ticket_id: str):
-        """Обновляет счётчик, чтобы он был не меньше числового значения из переданного ID.
-        Поддерживает формат 'TKT-000042' и произвольные строки с числами."""
+        """Обновляет счётчик, чтобы он был не меньше числового значения из переданного ID."""
         import re
         numbers = re.findall(r'\d+', ticket_id)
         if numbers:
@@ -183,18 +199,13 @@ class Ticket:
         self.sector = sector
         self.row = row
         self.seat = seat
-        
-        # Храним ID зала всегда
         self.hall_id = hall_id
-        # Храним ссылку на объект для работы логики (может быть None после загрузки)
         self._hall = hall_obj
         self.is_sold = False
-        # Автоматическая генерация уникального ID
         self.ticket_id = Ticket._next_id()
 
     def set_ticket_id(self, tid: str):
-        """Устанавливает ID билета вручную (для обратной совместимости и загрузки).
-        Также обновляет глобальный счётчик, чтобы избежать коллизий."""
+        """Устанавливает ID билета вручную."""
         self.ticket_id = tid
         Ticket._update_counter(tid)
 
@@ -211,40 +222,38 @@ class Ticket:
         return self._hall
 
     def sell_ticket(self) -> bool:
-        # Теперь мы не передаем hall_manager сюда, а используем привязанный объект
         if self.is_sold:
             raise TheaterException(f"Билет {self.ticket_id} уже продан")
-        
-        # Используем привязанный объект зала
-        current_hall = self.hall 
-        
+
+        current_hall = self.hall
+
         if not current_hall.is_seat_available(self.sector, self.row, self.seat):
             raise InvalidSeatException(
                 f"Место сектор {self.sector}, ряд {self.row}, место {self.seat} уже занято"
             )
-        
+
         current_hall.occupy_seat(self.sector, self.row, self.seat)
         self.is_sold = True
         return True
 
     def to_dict(self) -> Dict[str, Any]:
         return {
+            "__type__": self.__type__,
             "ticket_id": self.ticket_id,
             "price": self.price,
-            "setting_name": self.setting.name if self.setting else None,  # Только имя, не весь объект
+            "setting_name": self.setting.name if self.setting else None,
             "sector": self.sector,
             "row": self.row,
             "seat": self.seat,
-            "hall_id": self.hall_id,  # Сохраняем ТОЛЬКО ID
+            "hall_id": self.hall_id,
             "is_sold": self.is_sold
         }
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Ticket":
-        # setting будет восстановлен через setting_name позже
         obj = cls(
             data["price"],
-            None,  # setting будет установлен позже
+            None,
             data["sector"],
             data["row"],
             data["seat"],
@@ -260,6 +269,8 @@ class Ticket:
         self.setting = setting
         
 class AuditoryHall:
+    __type__ = "auditory_hall"
+    
     def __init__(self, name: str, sectors: int, rows_per_sector: int, seats_per_row: int, hall_id: str):
         self.name = name
         self.sectors = sectors
@@ -296,6 +307,7 @@ class AuditoryHall:
             for sector in self.seats
         ]
         return {
+            "__type__": self.__type__,
             "name": self.name,
             "sectors": self.sectors,
             "rows_per_sector": self.rows_per_sector,
@@ -323,56 +335,65 @@ class AuditoryHall:
         return hall
 
 class Stage:
+    __type__ = "stage"
+    
     def __init__(self, name: str, capacity: int, equipment: List[str]):
         self.name = name
         self.capacity = capacity
         self.equipment = equipment
         self.is_available = True
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
+            "__type__": self.__type__,
             "name": self.name,
             "capacity": self.capacity,
             "equipment": self.equipment,
             "is_available": self.is_available
         }
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Stage":
         stage = cls(data["name"], data["capacity"], data["equipment"])
         stage.is_available = data.get("is_available", True)
         return stage
-    
-    
+
+
 class Costume:
+    __type__ = "costume"
+    
     def __init__(self, name: str, size: str, color: str):
         self.name = name
         self.size = size
         self.color = color
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
+            "__type__": self.__type__,
             "name": self.name,
             "size": self.size,
             "color": self.color
         }
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Costume":
         return cls(data["name"], data["size"], data["color"])
-    
-    
+
+
 class CostumeRoom:
+    __type__ = "costume_room"
+    
     def __init__(self, name: str):
         self.name = name
         self.costume_ids: List[str] = []
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
+            "__type__": self.__type__,
             "name": self.name,
             "costume_ids": self.costume_ids
         }
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "CostumeRoom":
         room = cls(data["name"])
@@ -381,24 +402,26 @@ class CostumeRoom:
     
     
 class Theater:
+    __type__ = "theater"
+    
     def __init__(self, name: str):
         self.name = name
         from managers import StaffManager, HallManager, PerformanceManager, TicketManager, ResourceManager
-            
+
         self.staff_manager = StaffManager()
         self.hall_manager = HallManager()
         self.performance_manager = PerformanceManager()
         self.ticket_manager = TicketManager()
         self.resource_manager = ResourceManager()
-            
+
     def add_staff(self, staff_member):
         """Добавить сотрудника в театр"""
         self.staff_manager.add_staff(staff_member)
-            
+
     def add_hall(self, hall):
         """Добавить зал в театр"""
         self.resource_manager.hall_manager.add_hall(hall)
-            
+
     def add_setting(self, setting):
         """Добавить постановку в театр"""
         self.performance_manager.add_setting(setting)
@@ -408,35 +431,31 @@ class Theater:
         setting = next((s for s in self.performance_manager.settings if s.name == setting_name), None)
         if not setting:
             raise TheaterException(f"Постановка '{setting_name}' не найдена")
-        
+
         hall = self.resource_manager.hall_manager.get_hall_by_id(hall_id)
-        
-        # Создаём билеты через метод Setting
         tickets = setting.bind_to_hall(hall, base_price)
-        
-        # Добавляем все билеты в TicketManager
+
         for ticket in tickets:
             self.ticket_manager.add_ticket(ticket)
-        
+
         return tickets
 
     def add_ticket(self, ticket):
         """Добавить билет в театр"""
         self.ticket_manager.add_ticket(ticket)
-            
+
     def sell_ticket(self, ticket_id: str) -> bool:
         """Продать билет"""
-        # Связываем билет с его залом перед продажей
         ticket = next((t for t in self.ticket_manager.tickets if t.ticket_id == ticket_id), None)
         if ticket:
-            # Находим соответствующий зал и связываем с билетом
             hall = self.resource_manager.hall_manager.get_hall_by_id(ticket.hall_id)
             ticket.link_hall(hall)
         return self.ticket_manager.sell_ticket(ticket_id, self.resource_manager.hall_manager)
-            
+
     def to_dict(self) -> Dict[str, Any]:
         """Конвертировать театр в словарь для сохранения"""
         return {
+            "__type__": self.__type__,
             "name": self.name,
             "staff_manager": self.staff_manager.to_dict(),
             "performance_manager": self.performance_manager.to_dict(),
@@ -486,13 +505,13 @@ class Theater:
             data = json.load(f)
             loaded_theater = Theater.from_dict(data)
                 
-            # Копируем загруженные данные в текущий объект
+            
             self.name = loaded_theater.name
             self.staff_manager = loaded_theater.staff_manager
             self.resource_manager = loaded_theater.resource_manager
             self.performance_manager = loaded_theater.performance_manager
             self.ticket_manager = loaded_theater.ticket_manager
-            # hall_manager уже часть resource_manager
+            
             
     def reset(self):
         """Сбросить состояние театра к начальному"""

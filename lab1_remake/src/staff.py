@@ -1,4 +1,14 @@
 from typing import List, Dict, Any, Optional
+from enum import Enum
+
+
+class StaffType(str, Enum):
+    """Перечисление типов сотрудников для сериализации."""
+    STAFF = "staff"
+    ACTOR = "actor"
+    DIRECTOR = "director"
+    COSTUME_DESIGNER = "costume_designer"
+
 
 class Person:
     def __init__(self, name: str, age: int):
@@ -9,7 +19,7 @@ class Person:
         return self.__age
 
     def to_dict(self) -> Dict[str, Any]:
-        return {"name": self.name, "age": self.get_age()}
+        return {"__type__": StaffType.STAFF.value, "name": self.name, "age": self.get_age()}
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Person":
@@ -25,7 +35,7 @@ class Staff(Person):
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
-        base.update({"salary": self.get_salary()})
+        base.update({"__type__": StaffType.STAFF.value, "salary": self.get_salary()})
         return base
 
     @classmethod
@@ -36,11 +46,12 @@ class Actor(Staff):
     def __init__(self, name: str, age: int, salary: float, role: str = None):
         super().__init__(name, age, salary)
         self.role = role
-        self.assigned_costumes: Dict[str, Any] = {}  # ключ — название костюма, значение — объект Costume
+        self.assigned_costumes: Dict[str, Any] = {}
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
         base.update({
+            "__type__": StaffType.ACTOR.value,
             "role": self.role,
             "assigned_costumes": {
                 k: (v.to_dict() if hasattr(v, 'to_dict') else v)
@@ -151,38 +162,36 @@ class Director(Staff):
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
-        base.update({"directed_settings": [s.to_dict() if hasattr(s, 'to_dict') else s for s in self.directed_settings]})
+        base.update({"__type__": StaffType.DIRECTOR.value, "directed_settings": [s.to_dict() if hasattr(s, 'to_dict') else s for s in self.directed_settings]})
         return base
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Director":
         obj = cls(data["name"], data["age"], data["salary"])
-        # восстановим объекты спектаклей
         from theater import Setting
         obj.directed_settings = [Setting.from_dict(s) if isinstance(s, dict) else s for s in data.get("directed_settings", [])]
         return obj
 
-    def direct_setting(self, setting: Any):  # принимает объект Setting
+    def direct_setting(self, setting: Any):
         self.directed_settings.append(setting)
 
 
 class CostumeDesigner(Staff):
     def __init__(self, name: str, age: int, salary: float):
         super().__init__(name, age, salary)
-        self.created_costumes: List[Any] = []  # теперь хранит объекты Costume
+        self.created_costumes: List[Any] = []
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
-        base.update({"created_costumes": [c.to_dict() if hasattr(c, 'to_dict') else c for c in self.created_costumes]})
+        base.update({"__type__": StaffType.COSTUME_DESIGNER.value, "created_costumes": [c.to_dict() if hasattr(c, 'to_dict') else c for c in self.created_costumes]})
         return base
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "CostumeDesigner":
         obj = cls(data["name"], data["age"], data["salary"])
-        # восстановим объекты костюмов
         from theater import Costume
         obj.created_costumes = [Costume.from_dict(c) if isinstance(c, dict) else c for c in data.get("created_costumes", [])]
         return obj
 
-    def create_costume(self, costume: Any):  # принимает объект Costume
+    def create_costume(self, costume: Any):
         self.created_costumes.append(costume)

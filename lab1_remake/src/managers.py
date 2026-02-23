@@ -1,12 +1,13 @@
 from typing import List, Dict, Any, Optional
-
-from staff import Staff, Actor, Director, CostumeDesigner
+from staff import Staff, Actor, Director, CostumeDesigner, StaffType
 from exception import (
     TheaterException, TicketNotFoundException
 )
 
 
 class StaffManager:
+    __type__ = "staff_manager"
+    
     def __init__(self):
         self.staff: List[Staff] = []
 
@@ -17,18 +18,18 @@ class StaffManager:
         return self.staff
 
     def to_dict(self) -> Dict[str, Any]:
-        return {"staff": [s.to_dict() for s in self.staff]}
+        return {"__type__": self.__type__, "staff": [s.to_dict() for s in self.staff]}
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "StaffManager":
         manager = cls()
         for staff_data in data.get("staff", []):
-            # определить тип
-            if "role" in staff_data:
+            staff_type = staff_data.get("__type__")
+            if staff_type == StaffType.ACTOR.value:
                 staff_obj = Actor.from_dict(staff_data)
-            elif "directed_settings" in staff_data:
+            elif staff_type == StaffType.DIRECTOR.value:
                 staff_obj = Director.from_dict(staff_data)
-            elif "created_costumes" in staff_data:
+            elif staff_type == StaffType.COSTUME_DESIGNER.value:
                 staff_obj = CostumeDesigner.from_dict(staff_data)
             else:
                 staff_obj = Staff.from_dict(staff_data)
@@ -37,6 +38,8 @@ class StaffManager:
 
 
 class HallManager:
+    __type__ = "hall_manager"
+    
     def __init__(self):
         self.halls: List[Any] = []
 
@@ -52,11 +55,10 @@ class HallManager:
         )
 
     def to_dict(self) -> Dict[str, Any]:
-        return {"halls": [h.to_dict() for h in self.halls]}
+        return {"__type__": self.__type__, "halls": [h.to_dict() for h in self.halls]}
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "HallManager":
-        # импорт здесь, чтобы избежать циклических импортов
         from theater import AuditoryHall
 
         manager = cls()
@@ -67,6 +69,8 @@ class HallManager:
 
 
 class PerformanceManager:
+    __type__ = "performance_manager"
+    
     def __init__(self):
         self.settings: List[Any] = []
         self.repetitions: List[Any] = []
@@ -79,6 +83,7 @@ class PerformanceManager:
 
     def to_dict(self) -> Dict[str, Any]:
         return {
+            "__type__": self.__type__,
             "settings": [s.to_dict() for s in self.settings],
             "repetitions": [r.to_dict() for r in self.repetitions]
         }
@@ -89,13 +94,15 @@ class PerformanceManager:
 
         manager = cls()
         for setting_data in data.get("settings", []):
-            manager.add_setting(Setting.from_dict(setting_data))  # Now object
+            manager.add_setting(Setting.from_dict(setting_data))
         for rep_data in data.get("repetitions", []):
-            manager.add_repetition(Repetition.from_dict(rep_data))  # Now object
+            manager.add_repetition(Repetition.from_dict(rep_data))
         return manager
 
 
 class TicketManager:
+    __type__ = "ticket_manager"
+    
     def __init__(self):
         self.tickets: List[Any] = []
 
@@ -114,7 +121,7 @@ class TicketManager:
         return ticket.sell_ticket()
 
     def to_dict(self) -> Dict[str, Any]:
-        return {"tickets": [t.to_dict() for t in self.tickets]}
+        return {"__type__": self.__type__, "tickets": [t.to_dict() for t in self.tickets]}
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "TicketManager":
@@ -122,11 +129,13 @@ class TicketManager:
 
         manager = cls()
         for ticket_data in data.get("tickets", []):
-            manager.add_ticket(Ticket.from_dict(ticket_data))  # Now object
+            manager.add_ticket(Ticket.from_dict(ticket_data))
         return manager
 
 
 class ResourceManager:
+    __type__ = "resource_manager"
+    
     def __init__(self):
         self.stages: List[Any] = []
         self.costume_rooms: List[Any] = []
@@ -144,6 +153,7 @@ class ResourceManager:
 
     def to_dict(self) -> Dict[str, Any]:
         return {
+            "__type__": self.__type__,
             "stages": [s.to_dict() for s in self.stages],
             "costume_rooms": [cr.to_dict() for cr in self.costume_rooms],
             "costumes": [c.to_dict() for c in self.costumes],
@@ -158,7 +168,7 @@ class ResourceManager:
         for stage_data in data.get("stages", []):
             manager.add_stage(Stage.from_dict(stage_data))
         for room_data in data.get("costume_rooms", []):
-            manager.add_costume_room(CostumeRoom.from_dict(room_data))  # Now object
+            manager.add_costume_room(CostumeRoom.from_dict(room_data))
         for costume_data in data.get("costumes", []):
             manager.add_costume(Costume.from_dict(costume_data))
         halls_data = {"halls": data.get("halls", [])}

@@ -1,64 +1,177 @@
 # Theater Management System
 
-This is a comprehensive theater management system with CLI interface that allows managing various aspects of a theater including staff, performances, halls, and tickets.
+Система управления театром с CLI-интерфейсом для управления сотрудниками, постановками, залами и билетами.
 
-## Features
+## Возможности
 
-- Manage theater halls with sectors, rows, and seats
-- Create and manage performances and settings
-- Handle staff including actors and directors
-- Sell tickets and manage seating
-- Save and load theater state to/from JSON files
-- CLI interface for easy interaction
+- 🏛 Управление залами с секторами, рядами и местами
+- 🎭 Создание и управление постановками и репетициями
+- 👥 Управление персоналом (актёры, режиссёры, костюмеры)
+- 🎫 Продажа билетов с автоматическим ценообразованием
+- 💾 Сохранение и загрузка состояния в JSON
+- 🎭 Детальная информация о театре через меню
+- 👔 Управление костюмами и их назначение актёрам
 
-## Components
-
-### Core Classes
-
-- `Theater`: Main class that orchestrates all components
-- `AuditoryHall`: Represents a theater hall with seating arrangement
-- `Setting`: Represents a theatrical performance setting
-- `Ticket`: Represents a ticket for a specific seat and performance
-- `Staff`: Base class for theater personnel (actors, directors)
-- `Stage`: Represents a theater stage with equipment
-- `Costume`: Represents costumes for performances
-
-### Managers
-
-- `StaffManager`: Handles staff-related operations
-- `HallManager`: Manages theater halls
-- `PerformanceManager`: Manages performances and settings
-- `TicketManager`: Handles ticket operations
-- `ResourceManager`: Manages resources like stages and costumes
-
-## Usage
-
-To run the CLI interface:
+## Быстрый старт
 
 ```bash
 cd src
 python main_menu.py
 ```
 
-The CLI provides the following options:
+## Структура проекта
 
-1. Add hall - Create a new theater hall with specified dimensions
-2. Add setting - Create a new performance setting
-3. Add actor - Add a new actor to the staff
-4. Add director - Add a new director to the staff
-5. Sell ticket - Sell an existing ticket
-6. Show theater info - Display summary information about the theater
-7. Save theater state - Save all theater data to a JSON file
-8. Load theater state - Load theater data from a JSON file
-9. Show halls - List all available halls
-10. Show settings - List all available settings/performance
-11. Show staff - List all staff members
-12. Create ticket - Create a new ticket for a specific seat and performance
+```
+lab1_remake/
+├── src/
+│   ├── __init__.py          # Экспорт всех модулей
+│   ├── theater.py           # Основные классы (Theater, Setting, Ticket, ...)
+│   ├── staff.py             # Сотрудники (Person, Staff, Actor, Director, ...)
+│   ├── managers.py          # Менеджеры (StaffManager, HallManager, ...)
+│   ├── exception.py         # Исключения
+│   ├── serialization.py     # Система сериализации
+│   └── main_menu.py         # CLI интерфейс
+├── tests/
+│   └── test_theater.py      # Юнит-тесты (36 тестов)
+├── docs/
+│   ├── class_diagram.puml   # Диаграмма классов
+│   ├── state_diagram.puml   # Диаграмма состояний
+│   └── SERIALIZATION_GUIDE.md  # Руководство по сериализации
+├── data/                    # Примеры данных
+└── README.md
+```
 
-## Data Persistence
+## Компоненты
 
-The system supports saving and loading its complete state to/from JSON files, allowing for persistence between sessions.
+### Основные классы
 
-## Architecture
+| Класс | Описание |
+|-------|----------|
+| `Theater` | Главный класс, координирует все компоненты |
+| `AuditoryHall` | Зал с местами (сектора × ряды × места) |
+| `Setting` | Постановка с датой, режиссёром и актёрами |
+| `Repetition` | Репетиция с посещаемостью |
+| `Ticket` | Билет с автоматической генерацией ID |
+| `Stage` | Сцена с оборудованием |
+| `Costume` | Костюм для актёров |
+| `CostumeRoom` | Костюмерная |
 
-The system follows a modular architecture with separate managers for different aspects of theater management. The main Theater class coordinates between all managers to provide a unified interface.
+### Сотрудники
+
+| Класс | Описание |
+|-------|----------|
+| `Person` | Базовый класс (имя, возраст) |
+| `Staff` | Сотрудник (зарплата) |
+| `Actor` | Актёр (роль, назначенные костюмы) |
+| `Director` | Режиссёр (поставленные спектакли) |
+| `CostumeDesigner` | Костюмер (созданные костюмы) |
+
+### Менеджеры
+
+| Менеджер | Описание |
+|----------|----------|
+| `StaffManager` | Управление сотрудниками |
+| `HallManager` | Управление залами |
+| `PerformanceManager` | Управление постановками и репетициями |
+| `TicketManager` | Продажа билетов |
+| `ResourceManager` | Управление ресурсами (сцены, костюмерные, костюмы) |
+
+## Сериализация
+
+Система поддерживает полную сериализацию всех объектов в JSON:
+
+```python
+from src.serialization import Serializer, register_builtin_types
+from src.theater import Theater
+
+# Регистрация типов
+register_builtin_types()
+
+# Сохранение
+theater = Theater("Grand Theater")
+Serializer.save_to_file(theater, "theater.json")
+
+# Загрузка
+loaded = Serializer.load_from_file("theater.json")
+```
+
+📖 **Подробное руководство:** [docs/SERIALIZATION_GUIDE.md](docs/SERIALIZATION_GUIDE.md)
+
+## Тестирование
+
+```bash
+# Запустить все тесты
+venv/bin/python -m pytest tests/ -v
+
+# Запустить тесты сериализации
+venv/bin/python -m pytest tests/test_theater.py::TestSerialization -v
+
+# Запустить тесты с покрытием
+venv/bin/python -m pytest tests/ --cov=src -v
+```
+
+## CLI команды
+
+| № | Команда | Описание |
+|---|---------|----------|
+| 1 | Добавить зал | Создание нового зала с параметрами |
+| 2 | Добавить постановку | Создание новой постановки |
+| 3 | Добавить актера | Добавление актёра в труппу |
+| 4 | Добавить режиссера | Добавление режиссёра |
+| 5 | Продать билет | Продажа выбранного билета |
+| 6 | Показать информацию | Детальная информация о театре |
+| 7 | Сохранить состояние | Сохранение в JSON |
+| 8 | Загрузить состояние | Загрузка из JSON |
+| 9 | Привязать постановку к залу | Создание билетов |
+| 10 | Изменить название театра | Переименование |
+| 11 | Добавить актера к постановке | Назначение актёра |
+| 12 | Создать костюм | Создание нового костюма |
+| 13 | Назначить костюм актеру | Назначение костюма |
+| 14 | Показать доступные билеты | Список непроданных билетов |
+
+## Диаграммы
+
+### Диаграмма классов
+
+См. [docs/class_diagram.puml](docs/class_diagram.puml)
+
+```
+Theater *-- StaffManager
+Theater *-- HallManager  
+Theater *-- PerformanceManager
+Theater *-- TicketManager
+Theater *-- ResourceManager
+
+StaffManager o-- Staff
+HallManager o-- AuditoryHall
+...
+```
+
+### Диаграмма состояний
+
+См. [docs/state_diagram.puml](docs/state_diagram.puml)
+
+Основные состояния:
+- `Idle` — ожидание команды
+- `AddingHall`, `AddingSetting`, `AddingStaff` — добавление элементов
+- `BindingSettingToHall` — привязка постановки к залу
+- `SellingTicket` — продажа билета
+- `ViewingInfo` — просмотр информации
+- `SavingState`, `LoadingState` — сохранение/загрузка
+
+## Архитектурные принципы
+
+1. **Single Responsibility** — каждый класс отвечает за одну задачу
+2. **Инкапсуляция** — приватные атрибуты с геттерами
+3. **Сериализация через `__type__`** — явная идентификация типов
+4. **Менеджеры** — разделение логики управления по классам
+5. **CLI как фасад** — интерфейс отделён от бизнес-логики
+
+## Зависимости
+
+- Python 3.8+
+- Стандартная библиотека (json, datetime, typing, enum)
+
+## Лицензия
+
+Учебный проект для курса "Проектирование ООП".
