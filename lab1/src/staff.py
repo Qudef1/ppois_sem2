@@ -1,13 +1,11 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from enum import Enum
 
 
 class StaffType(str, Enum):
-    """Перечисление типов сотрудников для сериализации."""
     STAFF = "staff"
     ACTOR = "actor"
     DIRECTOR = "director"
-    COSTUME_DESIGNER = "costume_designer"
 
 
 class Person:
@@ -24,6 +22,7 @@ class Person:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Person":
         return cls(data["name"], data["age"])
+
 
 class Staff(Person):
     def __init__(self, name: str, age: int, salary: float):
@@ -42,7 +41,16 @@ class Staff(Person):
     def from_dict(cls, data: Dict[str, Any]) -> "Staff":
         return cls(data["name"], data["age"], data["salary"])
 
+
 class Actor(Staff):
+    DEFAULT_REPLIKES = {
+        "Hamlet": "Быть или не быть — вот в чём вопрос!",
+        "King": "Я король! Я требую подчинения!",
+        "Queen": "О, мой бедный сын...",
+        "Knight": "За короля и страну!",
+        "Jester": "Смех продлевает жизнь, милорд!",
+    }
+
     def __init__(self, name: str, age: int, salary: float, role: str = None):
         super().__init__(name, age, salary)
         self.role = role
@@ -72,88 +80,40 @@ class Actor(Staff):
         return obj
 
     def attend_repetition(self, repetition: Any) -> bool:
-        """Актёр отмечается на репетиции. Добавляет себя в список присутствующих."""
+        """Отметиться на репетиции."""
         if hasattr(repetition, 'attendance_list'):
             if self not in repetition.attendance_list:
                 repetition.check_list(self)
                 return True
         return False
 
-    def check_seat_in_hall(self, hall: Any, sector: int, row: int, seat: int) -> bool:
-        """Проверяет доступность конкретного места в зале.
-        Возвращает True если место свободно, False если занято."""
-        if hasattr(hall, 'is_seat_available'):
-            try:
-                return hall.is_seat_available(sector, row, seat)
-            except Exception:
-                return False
-        return False
-
     def assign_costume(self, costume: Any):
-        """Назначает костюм актёру. Принимает объект Costume."""
+        """Назначить костюм актёру."""
         if hasattr(costume, 'name'):
             self.assigned_costumes[costume.name] = costume
         else:
-            # Обратная совместимость: если передана строка
             self.assigned_costumes[str(costume)] = costume
 
-    def remove_costume(self, costume_name: str) -> bool:
-        """Убирает костюм у актёра по названию."""
-        if costume_name in self.assigned_costumes:
-            del self.assigned_costumes[costume_name]
-            return True
-        return False
-
     def get_costumes(self) -> Dict[str, Any]:
-        """Возвращает словарь назначенных костюмов."""
         return self.assigned_costumes
 
-    # Реплики по умолчанию для разных ролей
-    DEFAULT_REPLIKES = {
-        "Hamlet": "Быть или не быть — вот в чём вопрос!",
-        "King": "Я король! Я требую подчинения!",
-        "Queen": "О, мой бедный сын...",
-        "Knight": "За короля и страну!",
-        "Jester": "Смех продлевает жизнь, милорд!",
-        "Servant": "Слушаюсь, ваше сиятельство!",
-        "Doctor": "Пациент скорее мёртв, чем жив...",
-        "Guard": "Кто идёт?",
-        "Lover": "Моя любовь к тебе вечна!",
-        "Villain": "Месть будет сладкой!",
-    }
-
     def play(self, setting: Any = None) -> str:
-        """
-        Актёр произносит реплику на сцене.
-        Возвращает строку с репликой актёра.
-        """
-        # Если актёр играет роль в постановке, используем реплику по роли
+        """Актёр произносит реплику на сцене."""
         if self.role:
             replika = self.DEFAULT_REPLIKES.get(self.role)
             if replika:
                 return f"[{self.name} в роли '{self.role}']: {replika}"
-        
-        # Если есть постановка, пробуем получить реплику из контекста
         if setting and hasattr(setting, 'name'):
             return f"[{self.name} в постановке '{setting.name}']: (импровизирует...)"
-        
-        # Реплика по умолчанию
         return f"[{self.name}]: (выходит на поклон)"
 
     def perform_on_stage(self, stage: Any, setting: Any = None) -> str:
-        """
-        Актёр выступает на сцене в рамках постановки.
-        Возвращает строку с информацией о выступлении.
-        """
+        """Выступление актёра на сцене."""
         if not hasattr(stage, 'name') or not stage.is_available:
-            return f"[{self.name}]: Сцена '{stage.name if hasattr(stage, 'name') else 'N/A'}' недоступна для выступления."
-        
+            return f"[{self.name}]: Сцена '{stage.name if hasattr(stage, 'name') else 'N/A'}' недоступна"
         replika = self.play(setting)
-        return f"=== ВЫСТУПЛЕНИЕ НА СЦЕНЕ '{stage.name}' ===\n{replika}\n=== КОНЕЦ ВЫСТУПЛЕНИЯ ==="
+        return f"=== СЦЕНА '{stage.name}' ===\n{replika}\n=== КОНЕЦ ==="
 
-    def add_replique(self, role: str, replika: str):
-        """Добавляет пользовательскую реплику для роли."""
-        self.DEFAULT_REPLIKES[role] = replika
 
 class Director(Staff):
     def __init__(self, name: str, age: int, salary: float):
@@ -162,7 +122,10 @@ class Director(Staff):
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
-        base.update({"__type__": StaffType.DIRECTOR.value, "directed_settings": [s.to_dict() if hasattr(s, 'to_dict') else s for s in self.directed_settings]})
+        base.update({
+            "__type__": StaffType.DIRECTOR.value,
+            "directed_settings": [s.to_dict() if hasattr(s, 'to_dict') else s for s in self.directed_settings]
+        })
         return base
 
     @classmethod
@@ -174,24 +137,3 @@ class Director(Staff):
 
     def direct_setting(self, setting: Any):
         self.directed_settings.append(setting)
-
-
-class CostumeDesigner(Staff):
-    def __init__(self, name: str, age: int, salary: float):
-        super().__init__(name, age, salary)
-        self.created_costumes: List[Any] = []
-
-    def to_dict(self) -> Dict[str, Any]:
-        base = super().to_dict()
-        base.update({"__type__": StaffType.COSTUME_DESIGNER.value, "created_costumes": [c.to_dict() if hasattr(c, 'to_dict') else c for c in self.created_costumes]})
-        return base
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "CostumeDesigner":
-        obj = cls(data["name"], data["age"], data["salary"])
-        from theater import Costume
-        obj.created_costumes = [Costume.from_dict(c) if isinstance(c, dict) else c for c in data.get("created_costumes", [])]
-        return obj
-
-    def create_costume(self, costume: Any):
-        self.created_costumes.append(costume)

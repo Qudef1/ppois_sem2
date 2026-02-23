@@ -1,293 +1,160 @@
 @startuml
-!theme plain
+' Диаграмма классов театральной системы
 
-' ==================== БАЗОВЫЕ КЛАССЫ ====================
+' ========== Иерархия сотрудников ==========
 class Person {
-    - name: str
-    - __age: int
-
-    + get_age(): int
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): Person
+    +name: str
+    +get_age(): int
 }
 
 class Staff extends Person {
-    - __salary: float
-
-    + get_salary(): float
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): Staff
+    +get_salary(): float
 }
 
-class Action {
-    - durability: float
-    - name: str
-    - date: datetime
-
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): Action
-}
-
-class TheaterException {
-}
-
-' ==================== СОТРУДНИКИ ====================
 class Actor extends Staff {
-    - role: str
-    - assigned_costumes: Dict[str, Any]
-    + DEFAULT_REPLIKES: Dict[str, str]
-
-    + attend_repetition(repetition: Repetition): bool
-    + check_seat_in_hall(hall: AuditoryHall, sector: int, row: int, seat: int): bool
-    + assign_costume(costume: Costume)
-    + remove_costume(costume_name: str): bool
-    + get_costumes(): Dict[str, Any]
-    + play(setting: Setting): str
-    + perform_on_stage(stage: Stage, setting: Setting): str
-    + add_replique(role: str, replika: str)
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): Actor
+    +role: str
+    +attend_repetition(rep: Repetition): bool
+    +assign_costume(costume: Costume)
+    +play(setting: Setting): str
+    +perform_on_stage(stage: Stage, setting: Setting): str
 }
 
 class Director extends Staff {
-    - directed_settings: List[Setting]
-
-    + direct_setting(setting: Setting)
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): Director
+    +direct_setting(setting: Setting)
 }
 
-class CostumeDesigner extends Staff {
-    - created_costumes: List[Costume]
-
-    + create_costume(costume: Costume)
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): CostumeDesigner
+' ========== Постановки и репетиции ==========
+class Action {
+    +name: str
+    +date: datetime
+    +durability: float
 }
 
-' ==================== ПОСТАНОВКИ И РЕПЕТИЦИИ ====================
 class Setting extends Action {
-    - director: Director
-    - cast: List[Actor]
-    - hall: AuditoryHall
-    - tickets: List[Ticket]
-    - base_price: float
-
-    + add_cast(actor: Actor)
-    + bind_to_hall(hall: AuditoryHall, base_price: float): List[Ticket]
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): Setting
-    + link_hall_and_tickets(hall: AuditoryHall, ticket_manager: TicketManager)
+    +director: Director
+    +cast: List[Actor]
+    +base_price: float
+    +add_cast(actor: Actor)
+    +bind_to_hall(hall: AuditoryHall, base_price: float): List[Ticket]
 }
 
 class Repetition extends Action {
-    - setting: Setting
-    - attendance_list: List[Staff]
-
-    + check_list(actor: Staff)
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): Repetition
+    +setting: Setting
+    +attendance_list: List[Staff]
+    +check_list(staff: Staff)
 }
 
-' ==================== ЗАЛ И БИЛЕТЫ ====================
+' ========== Зал и билеты ==========
 class Seat {
-    - seat_number: int
-    - is_occupied: bool
-
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): Seat
+    +seat_number: int
+    +is_occupied: bool
 }
 
 class AuditoryHall {
-    - name: str
-    - sectors: int
-    - rows_per_sector: int
-    - seats_per_row: int
-    - hall_id: str
-    - seats: List[List[List[Seat]]]
-    - audience_count: int
-    - capacity: int
-
-    + is_seat_available(sector: int, row: int, seat: int): bool
-    + occupy_seat(sector: int, row: int, seat: int): bool
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): AuditoryHall
+    +hall_id: str
+    +name: str
+    +sectors: int
+    +rows_per_sector: int
+    +seats_per_row: int
+    +capacity: int
+    +is_seat_available(sector, row, seat): bool
+    +occupy_seat(sector, row, seat)
 }
 
 class Ticket {
-    {static} _counter: int
-    - ticket_id: str
-    - price: float
-    - setting: Setting
-    - sector: int
-    - row: int
-    - seat: int
-    - hall_id: str
-    - _hall: AuditoryHall
-    - is_sold: bool
-
-    + {static} _next_id(): str
-    + {static} _update_counter(ticket_id: str)
-    + {static} reset_counter()
-    + set_ticket_id(tid: str)
-    + link_hall(hall: AuditoryHall)
-    + link_setting(setting: Setting)
-    + sell_ticket(): bool
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): Ticket
+    +ticket_id: str
+    +price: float
+    +sector: int
+    +row: int
+    +seat: int
+    +is_sold: bool
+    +sell_ticket(): bool
 }
 
-' ==================== РЕСУРСЫ ====================
+' ========== Ресурсы ==========
 class Stage {
-    - name: str
-    - capacity: int
-    - equipment: List[str]
-    - is_available: bool
-
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): Stage
+    +name: str
+    +capacity: int
+    +equipment: List[str]
+    +is_available: bool
 }
 
 class Costume {
-    - name: str
-    - size: str
-    - color: str
-
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): Costume
+    +name: str
+    +size: str
+    +color: str
 }
 
 class CostumeRoom {
-    - name: str
-    - costume_ids: List[str]
-
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): CostumeRoom
+    +name: str
+    +costume_ids: List[str]
 }
 
-' ==================== ТЕАТР ====================
-class Theater {
-    - name: str
-    - staff_manager: StaffManager
-    - hall_manager: HallManager
-    - performance_manager: PerformanceManager
-    - ticket_manager: TicketManager
-    - resource_manager: ResourceManager
-
-    + add_staff(staff_member: Staff)
-    + add_hall(hall: AuditoryHall)
-    + add_setting(setting: Setting)
-    + add_ticket(ticket: Ticket)
-    + bind_setting_to_hall(setting_name: str, hall_id: str, base_price: float): List[Ticket]
-    + sell_ticket(ticket_id: str): bool
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): Theater
-    + save_to_file(filepath: str)
-    + load_from_file(filepath: str)
-    + reset()
-}
-
-' ==================== МЕНЕДЖЕРЫ ====================
+' ========== Менеджеры ==========
 class StaffManager {
-    - staff: List[Staff]
-
-    + add_staff(staff_member: Staff)
-    + get_staff(): List[Staff]
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): StaffManager
+    +add_staff(staff: Staff)
+    +get_staff(): List[Staff]
 }
 
 class HallManager {
-    - halls: List[AuditoryHall]
-
-    + add_hall(hall: AuditoryHall)
-    + get_hall_by_id(hall_id: str): AuditoryHall
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): HallManager
+    +add_hall(hall: AuditoryHall)
+    +get_hall_by_id(id: str): AuditoryHall
 }
 
 class PerformanceManager {
-    - settings: List[Setting]
-    - repetitions: List[Repetition]
-
-    + add_setting(setting: Setting)
-    + add_repetition(repetition: Repetition)
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): PerformanceManager
+    +add_setting(setting: Setting)
+    +add_repetition(rep: Repetition)
 }
 
 class TicketManager {
-    - tickets: List[Ticket]
-
-    + add_ticket(ticket: Ticket)
-    + get_all_tickets(): List[Ticket]
-    + sell_ticket(ticket_id: str, hall_manager: HallManager): bool
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): TicketManager
+    +add_ticket(ticket: Ticket)
+    +sell_ticket(id: str, hall_manager: HallManager): bool
 }
 
 class ResourceManager {
-    - stages: List[Stage]
-    - costume_rooms: List[CostumeRoom]
-    - costumes: List[Costume]
-    - hall_manager: HallManager
-
-    + add_stage(stage: Stage)
-    + add_costume_room(room: CostumeRoom)
-    + add_costume(costume: Costume)
-    + to_dict(): Dict[str, Any]
-    + from_dict(data: Dict[str, Any]): ResourceManager
+    +hall_manager: HallManager
+    +add_stage(stage: Stage)
+    +add_costume_room(room: CostumeRoom)
+    +add_costume(costume: Costume)
 }
 
-' ==================== CLI ====================
-class TheaterCLI {
-    - theater: Theater
-    - current_hall: AuditoryHall
-    - current_setting: Setting
-
-    + display_menu()
-    + get_user_input(msg: str): str
-    + get_validated_int(msg: str, min_val: int, max_val: int): int
-    + get_validated_float(msg: str, min_val: float): float
-    + get_validated_date(msg: str): datetime
-    + get_validated_choice(msg: str, options_count: int): int
-    + add_hall()
-    + add_setting()
-    + add_actor()
-    + add_director()
-    + sell_ticket()
-    + show_theater_info()
-    + save_theater()
-    + load_theater()
-    + bind_setting_to_hall()
-    + add_actor_to_setting()
-    + create_costume()
-    + assign_costume_to_actor()
+' ========== Основной класс ==========
+class Theater {
+    +name: str
+    +staff_manager: StaffManager
+    +hall_manager: HallManager
+    +performance_manager: PerformanceManager
+    +ticket_manager: TicketManager
+    +resource_manager: ResourceManager
+    
+    +add_staff(staff: Staff)
+    +add_hall(hall: AuditoryHall)
+    +add_setting(setting: Setting)
+    +add_repetition(repetition: Repetition)
+    +bind_setting_to_hall(setting_name: str, hall_id: str, base_price: float): List[Ticket]
+    +sell_ticket(ticket_id: str): bool
+    +create_costume(name: str, size: str, color: str): Costume
+    +assign_costume_to_actor(costume: Costume, actor: Actor)
+    +save_to_file(filepath: str)
+    +load_from_file(filepath: str)
 }
 
-' ==================== ИСКЛЮЧЕНИЯ ====================
-class InvalidSeatException extends TheaterException {
-}
+' ========== Исключения ==========
+class TheaterException
+class InvalidSeatException extends TheaterException
+class TicketNotFoundException extends TheaterException
 
-class TicketNotFoundException extends TheaterException {
-}
-
-class InvalidDateException extends TheaterException {
-}
-
-' ==================== СВЯЗИ ====================
-' Наследование
+' ========== Связи ==========
 Person <|-- Staff
 Staff <|-- Actor
 Staff <|-- Director
-Staff <|-- CostumeDesigner
+
 Action <|-- Setting
 Action <|-- Repetition
+
 TheaterException <|-- InvalidSeatException
 TheaterException <|-- TicketNotFoundException
-TheaterException <|-- InvalidDateException
 
-' Композиция и агрегация
 Theater *-- StaffManager
 Theater *-- HallManager
 Theater *-- PerformanceManager
@@ -299,27 +166,20 @@ HallManager o-- AuditoryHall
 PerformanceManager o-- Setting
 PerformanceManager o-- Repetition
 TicketManager o-- Ticket
-ResourceManager o-- Stage
-ResourceManager o-- CostumeRoom
-ResourceManager o-- Costume
 ResourceManager *-- HallManager
+ResourceManager o-- Stage
+ResourceManager o-- Costume
+ResourceManager o-- CostumeRoom
 
 AuditoryHall o-- Seat
-Setting o-- Director
-Setting o-- Actor
+Setting --> Director
+Setting --> Actor
 Setting o-- Ticket
-Repetition o-- Setting
-Repetition o-- Staff
-Ticket o-- Setting
-Ticket o-- AuditoryHall
+Repetition --> Setting
+Repetition --> Staff
+Ticket --> Setting
+Ticket --> AuditoryHall
 Actor o-- Costume
-Director o-- Setting
-CostumeDesigner o-- Costume
-
-' Зависимости
-TheaterCLI --> Theater
-TheaterCLI --> Setting
-TheaterCLI --> AuditoryHall
-TheaterCLI --> Costume
+Director --> Setting
 
 @enduml

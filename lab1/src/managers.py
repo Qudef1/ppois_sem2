@@ -1,13 +1,11 @@
-from typing import List, Dict, Any, Optional
-from staff import Staff, Actor, Director, CostumeDesigner, StaffType
-from exception import (
-    TheaterException, TicketNotFoundException
-)
+from typing import List, Dict, Any
+from staff import Staff, Actor, Director, StaffType
+from exception import TheaterException, TicketNotFoundException
 
 
 class StaffManager:
     __type__ = "staff_manager"
-    
+
     def __init__(self):
         self.staff: List[Staff] = []
 
@@ -29,8 +27,6 @@ class StaffManager:
                 staff_obj = Actor.from_dict(staff_data)
             elif staff_type == StaffType.DIRECTOR.value:
                 staff_obj = Director.from_dict(staff_data)
-            elif staff_type == StaffType.COSTUME_DESIGNER.value:
-                staff_obj = CostumeDesigner.from_dict(staff_data)
             else:
                 staff_obj = Staff.from_dict(staff_data)
             manager.add_staff(staff_obj)
@@ -39,7 +35,7 @@ class StaffManager:
 
 class HallManager:
     __type__ = "hall_manager"
-    
+
     def __init__(self):
         self.halls: List[Any] = []
 
@@ -50,27 +46,23 @@ class HallManager:
         for hall in self.halls:
             if hall.hall_id == hall_id:
                 return hall
-        raise TheaterException(
-            f"Зал с ID '{hall_id}' не найден в системе"
-        )
+        raise TheaterException(f"Зал с ID '{hall_id}' не найден")
 
     def to_dict(self) -> Dict[str, Any]:
         return {"__type__": self.__type__, "halls": [h.to_dict() for h in self.halls]}
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "HallManager":
-        from theater import AuditoryHall
-
+        from halls import AuditoryHall
         manager = cls()
         for hall_data in data.get("halls", []):
-            hall = AuditoryHall.from_dict(hall_data)
-            manager.add_hall(hall)
+            manager.add_hall(AuditoryHall.from_dict(hall_data))
         return manager
 
 
 class PerformanceManager:
     __type__ = "performance_manager"
-    
+
     def __init__(self):
         self.settings: List[Any] = []
         self.repetitions: List[Any] = []
@@ -90,8 +82,7 @@ class PerformanceManager:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "PerformanceManager":
-        from theater import Setting, Repetition
-
+        from actions import Setting, Repetition
         manager = cls()
         for setting_data in data.get("settings", []):
             manager.add_setting(Setting.from_dict(setting_data))
@@ -102,7 +93,7 @@ class PerformanceManager:
 
 class TicketManager:
     __type__ = "ticket_manager"
-    
+
     def __init__(self):
         self.tickets: List[Any] = []
 
@@ -115,9 +106,7 @@ class TicketManager:
     def sell_ticket(self, ticket_id: str, hall_manager: HallManager) -> bool:
         ticket = next((t for t in self.tickets if t.ticket_id == ticket_id), None)
         if not ticket:
-            raise TicketNotFoundException(
-                f"Билет с ID '{ticket_id}' не найден в системе"
-            )
+            raise TicketNotFoundException(f"Билет с ID '{ticket_id}' не найден")
         return ticket.sell_ticket()
 
     def to_dict(self) -> Dict[str, Any]:
@@ -125,8 +114,7 @@ class TicketManager:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "TicketManager":
-        from theater import Ticket
-
+        from seats import Ticket
         manager = cls()
         for ticket_data in data.get("tickets", []):
             manager.add_ticket(Ticket.from_dict(ticket_data))
@@ -135,7 +123,7 @@ class TicketManager:
 
 class ResourceManager:
     __type__ = "resource_manager"
-    
+
     def __init__(self):
         self.stages: List[Any] = []
         self.costume_rooms: List[Any] = []
@@ -162,8 +150,8 @@ class ResourceManager:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "ResourceManager":
-        from theater import Stage, CostumeRoom, Costume, AuditoryHall
-
+        from resources import Stage, CostumeRoom, Costume
+        from halls import AuditoryHall
         manager = cls()
         for stage_data in data.get("stages", []):
             manager.add_stage(Stage.from_dict(stage_data))

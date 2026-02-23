@@ -46,32 +46,32 @@ class Serializer:
     def serialize(cls, obj: Any) -> Dict[str, Any]:
         """
         Сериализует объект в словарь.
-        
+
         Объект должен иметь метод to_dict().
         """
         if not hasattr(obj, 'to_dict'):
-            raise ValueError(f"Объект {type(obj)} не имеет метода to_dict()")
+            raise ValueError(f"Объект типа {type(obj).__name__} не имеет метода to_dict()")
         return obj.to_dict()
-    
+
     @classmethod
     def deserialize(cls, data: Dict[str, Any]) -> Any:
         """
         Десериализует объект из словаря.
-        
+
         Словарь должен содержать поле __type__.
         """
         if cls._type_field not in data:
             raise ValueError(f"Отсутствует поле {cls._type_field} в данных")
-        
+
         type_name = data[cls._type_field]
         class_obj = cls.get_type(type_name)
-        
+
         if class_obj is None:
-            raise ValueError(f"Неизвестный тип: {type_name}")
-        
+            raise ValueError(f"Неизвестный тип сериализации: {type_name}")
+
         if not hasattr(class_obj, 'from_dict'):
-            raise ValueError(f"Класс {class_obj} не имеет метода from_dict()")
-        
+            raise ValueError(f"Класс {class_obj.__name__} не имеет метода from_dict()")
+
         return class_obj.from_dict(data)
     
     @classmethod
