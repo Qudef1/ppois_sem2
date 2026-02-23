@@ -68,13 +68,11 @@ class Ticket:
 
         if self.is_sold:
             raise TheaterException(f"Билет {self.ticket_id} уже продан")
-        current_hall = self.hall
-        if not current_hall.is_seat_available(self.sector, self.row, self.seat):
-            raise InvalidSeatException(
-                f"Место сектор {self.sector}, ряд {self.row}, место {self.seat} уже занято"
-            )
-        current_hall.occupy_seat(self.sector, self.row, self.seat)
+        
+        # Помечаем билет как проданный и занимаем место
         self.is_sold = True
+        current_hall = self.hall
+        current_hall.occupy_seat(self.sector, self.row, self.seat)
         return True
 
     def to_dict(self) -> Dict[str, Any]:

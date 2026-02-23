@@ -1,5 +1,5 @@
 from typing import List, Dict, Any
-from staff import Staff, Actor, Director, StaffType
+from staff import Staff, Actor, Director
 from exception import TheaterException, TicketNotFoundException
 
 
@@ -23,9 +23,9 @@ class StaffManager:
         manager = cls()
         for staff_data in data.get("staff", []):
             staff_type = staff_data.get("__type__")
-            if staff_type == StaffType.ACTOR.value:
+            if staff_type == "actor":
                 staff_obj = Actor.from_dict(staff_data)
-            elif staff_type == StaffType.DIRECTOR.value:
+            elif staff_type == "director":
                 staff_obj = Director.from_dict(staff_data)
             else:
                 staff_obj = Staff.from_dict(staff_data)
@@ -151,7 +151,6 @@ class ResourceManager:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "ResourceManager":
         from resources import Stage, CostumeRoom, Costume
-        from halls import AuditoryHall
         manager = cls()
         for stage_data in data.get("stages", []):
             manager.add_stage(Stage.from_dict(stage_data))

@@ -1,11 +1,4 @@
 from typing import List, Dict, Any
-from enum import Enum
-
-
-class StaffType(str, Enum):
-    STAFF = "staff"
-    ACTOR = "actor"
-    DIRECTOR = "director"
 
 
 class Person:
@@ -17,7 +10,7 @@ class Person:
         return self.__age
 
     def to_dict(self) -> Dict[str, Any]:
-        return {"__type__": StaffType.STAFF.value, "name": self.name, "age": self.get_age()}
+        return {"__type__": "person", "name": self.name, "age": self.get_age()}
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Person":
@@ -34,7 +27,7 @@ class Staff(Person):
 
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
-        base.update({"__type__": StaffType.STAFF.value, "salary": self.get_salary()})
+        base.update({"__type__": "staff", "salary": self.get_salary()})
         return base
 
     @classmethod
@@ -59,7 +52,7 @@ class Actor(Staff):
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
         base.update({
-            "__type__": StaffType.ACTOR.value,
+            "__type__": "actor",
             "role": self.role,
             "assigned_costumes": {
                 k: (v.to_dict() if hasattr(v, 'to_dict') else v)
@@ -123,7 +116,7 @@ class Director(Staff):
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
         base.update({
-            "__type__": StaffType.DIRECTOR.value,
+            "__type__": "director",
             "directed_settings": [s.to_dict() if hasattr(s, 'to_dict') else s for s in self.directed_settings]
         })
         return base

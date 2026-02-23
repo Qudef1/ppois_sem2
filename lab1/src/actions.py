@@ -1,12 +1,5 @@
 from datetime import datetime
 from typing import List, Dict, Any, Optional
-from enum import Enum
-
-
-class ActionType(str, Enum):
-    ACTION = "action"
-    SETTING = "setting"
-    REPETITION = "repetition"
 
 
 class Action:
@@ -73,7 +66,7 @@ class Setting(Action):
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
         base.update({
-            "__type__": ActionType.SETTING.value,
+            "__type__": "setting",
             "cast": [a.to_dict() for a in self.cast],
             "director": self.director.to_dict(),
             "hall_id": self.hall.hall_id if self.hall else None,
@@ -114,6 +107,18 @@ class Setting(Action):
             ticket.link_setting(self)
             ticket_manager.add_ticket(ticket)
             self.tickets.append(ticket)
+
+        # Синхронизируем места в зале: сбрасываем все и занимаем только проданные
+        for sector in hall.seats:
+            for row in sector:
+                for seat in row:
+                    seat.is_occupied = False
+
+        # Занимаем места для проданных билетов
+        for ticket in self.tickets:
+            if ticket.is_sold:
+                hall.seats[ticket.sector][ticket.row][ticket.seat].is_occupied = True
+
         self._pending_tickets_data = []
         self._pending_hall_id = None
 
@@ -129,7 +134,7 @@ class Repetition(Action):
     def to_dict(self) -> Dict[str, Any]:
         base = super().to_dict()
         base.update({
-            "__type__": ActionType.REPETITION.value,
+            "__type__": "repetition",
             "setting": self.setting.to_dict() if hasattr(self.setting, 'to_dict') else self.setting,
             "attendance_list": [s.to_dict() for s in self.attendance_list]
         })

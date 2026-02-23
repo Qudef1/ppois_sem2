@@ -41,9 +41,9 @@
                 "salary": 75000.0,
                 "role": "Ромео",
                 "assigned_costumes": {
-                    "Платьо Джульетты": {
+                    "Платье Джульетты": {
                         "__type__": "costume",
-                        "name": "Платьо Джульетты",
+                        "name": "Платье Джульетты",
                         "size": "M",
                         "color": "Розовый"
                     }
@@ -55,14 +55,7 @@
                 "age": 31,
                 "salary": 75000.0,
                 "role": "Макбет",
-                "assigned_costumes": {
-                    "Костюм шута": {
-                        "__type__": "costume",
-                        "name": "Костюм шута",
-                        "size": "M",
-                        "color": "Разноцветный"
-                    }
-                }
+                "assigned_costumes": {}
             },
             {
                 "__type__": "actor",
@@ -148,141 +141,6 @@
                 "age": 62,
                 "salary": 120000.0,
                 "directed_settings": []
-            },
-            {
-                "__type__": "costume_designer",
-                "name": "Елена Прекрасная",
-                "age": 40,
-                "salary": 65000.0,
-                "created_costumes": [
-                    {
-                        "__type__": "costume",
-                        "name": "Королевская мантия",
-                        "size": "XL",
-                        "color": "Пурпурный"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Рыцарские латы",
-                        "size": "L",
-                        "color": "Серебряный"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Платьо Джульетты",
-                        "size": "M",
-                        "color": "Розовый"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Плащ Гамлета",
-                        "size": "L",
-                        "color": "Чёрный"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Одеяние короля",
-                        "size": "XXL",
-                        "color": "Золотой"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Костюм шута",
-                        "size": "M",
-                        "color": "Разноцветный"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Доспехи воина",
-                        "size": "L",
-                        "color": "Стальной"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Платьо королевы",
-                        "size": "M",
-                        "color": "Изумрудный"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Мантия волшебника",
-                        "size": "L",
-                        "color": "Синий"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Костюм слуги",
-                        "size": "S",
-                        "color": "Серый"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Одеяние жреца",
-                        "size": "L",
-                        "color": "Белый"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Плащ убийцы",
-                        "size": "M",
-                        "color": "Тёмно-зелёный"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Платьо крестьянки",
-                        "size": "M",
-                        "color": "Коричневый"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Костюм торговца",
-                        "size": "L",
-                        "color": "Оранжевый"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Мантия судьи",
-                        "size": "XL",
-                        "color": "Красный"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Одеяние врача",
-                        "size": "L",
-                        "color": "Бордовый"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Костюм музыканта",
-                        "size": "M",
-                        "color": "Голубой"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Плащ путешественника",
-                        "size": "L",
-                        "color": "Зелёный"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Платьо принцессы",
-                        "size": "S",
-                        "color": "Нежно-розовый"
-                    },
-                    {
-                        "__type__": "costume",
-                        "name": "Доспехи капитана",
-                        "size": "XL",
-                        "color": "Чёрно-золотой"
-                    }
-                ]
-            },
-            {
-                "__type__": "costume_designer",
-                "name": "Мария Искусная",
-                "age": 35,
-                "salary": 65000.0,
-                "created_costumes": []
             }
         ]
     },
@@ -332,9 +190,9 @@
                         "salary": 75000.0,
                         "role": "Ромео",
                         "assigned_costumes": {
-                            "Платьо Джульетты": {
+                            "Платье Джульетты": {
                                 "__type__": "costume",
-                                "name": "Платьо Джульетты",
+                                "name": "Платье Джульетты",
                                 "size": "M",
                                 "color": "Розовый"
                             }
@@ -3717,7 +3575,7 @@
                         "row": 0,
                         "seat": 0,
                         "hall_id": "exp_hall",
-                        "is_sold": false
+                        "is_sold": true
                     },
                     {
                         "__type__": "ticket",
@@ -3728,7 +3586,7 @@
                         "row": 0,
                         "seat": 1,
                         "hall_id": "exp_hall",
-                        "is_sold": false
+                        "is_sold": true
                     },
                     {
                         "__type__": "ticket",
@@ -3739,7 +3597,7 @@
                         "row": 0,
                         "seat": 2,
                         "hall_id": "exp_hall",
-                        "is_sold": false
+                        "is_sold": true
                     },
                     {
                         "__type__": "ticket",
@@ -7023,9 +6881,9 @@
                         "salary": 75000.0,
                         "role": "Ромео",
                         "assigned_costumes": {
-                            "Платьо Джульетты": {
+                            "Платье Джульетты": {
                                 "__type__": "costume",
-                                "name": "Платьо Джульетты",
+                                "name": "Платье Джульетты",
                                 "size": "M",
                                 "color": "Розовый"
                             }
@@ -13759,9 +13617,9 @@
                             "salary": 75000.0,
                             "role": "Ромео",
                             "assigned_costumes": {
-                                "Платьо Джульетты": {
+                                "Платье Джульетты": {
                                     "__type__": "costume",
-                                    "name": "Платьо Джульетты",
+                                    "name": "Платье Джульетты",
                                     "size": "M",
                                     "color": "Розовый"
                                 }
@@ -13900,9 +13758,9 @@
                             "salary": 75000.0,
                             "role": "Ромео",
                             "assigned_costumes": {
-                                "Платьо Джульетты": {
+                                "Платье Джульетты": {
                                     "__type__": "costume",
-                                    "name": "Платьо Джульетты",
+                                    "name": "Платье Джульетты",
                                     "size": "M",
                                     "color": "Розовый"
                                 }
@@ -17264,7 +17122,7 @@
                 "row": 0,
                 "seat": 0,
                 "hall_id": "exp_hall",
-                "is_sold": false
+                "is_sold": true
             },
             {
                 "__type__": "ticket",
@@ -17275,7 +17133,7 @@
                 "row": 0,
                 "seat": 1,
                 "hall_id": "exp_hall",
-                "is_sold": false
+                "is_sold": true
             },
             {
                 "__type__": "ticket",
@@ -17286,7 +17144,7 @@
                 "row": 0,
                 "seat": 2,
                 "hall_id": "exp_hall",
-                "is_sold": false
+                "is_sold": true
             },
             {
                 "__type__": "ticket",
@@ -27189,7 +27047,7 @@
                 "costume_ids": [
                     "Королевская мантия",
                     "Рыцарские латы",
-                    "Платьо Джульетты",
+                    "Платье Джульетты",
                     "Плащ Гамлета",
                     "Одеяние короля"
                 ]
@@ -27200,7 +27058,7 @@
                 "costume_ids": [
                     "Костюм шута",
                     "Доспехи воина",
-                    "Платьо королевы",
+                    "Платье королевы",
                     "Мантия волшебника",
                     "Костюм слуги"
                 ]
@@ -27211,7 +27069,7 @@
                 "costume_ids": [
                     "Одеяние жреца",
                     "Плащ убийцы",
-                    "Платьо крестьянки",
+                    "Платье крестьянки",
                     "Костюм торговца",
                     "Мантия судьи"
                 ]
@@ -27232,7 +27090,7 @@
             },
             {
                 "__type__": "costume",
-                "name": "Платьо Джульетты",
+                "name": "Платье Джульетты",
                 "size": "M",
                 "color": "Розовый"
             },
@@ -27262,7 +27120,7 @@
             },
             {
                 "__type__": "costume",
-                "name": "Платьо королевы",
+                "name": "Платье королевы",
                 "size": "M",
                 "color": "Изумрудный"
             },
@@ -27292,7 +27150,7 @@
             },
             {
                 "__type__": "costume",
-                "name": "Платьо крестьянки",
+                "name": "Платье крестьянки",
                 "size": "M",
                 "color": "Коричневый"
             },
@@ -27328,7 +27186,7 @@
             },
             {
                 "__type__": "costume",
-                "name": "Платьо принцессы",
+                "name": "Платье принцессы",
                 "size": "S",
                 "color": "Нежно-розовый"
             },
@@ -47198,755 +47056,755 @@
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ]
                     ],
@@ -47955,775 +47813,775 @@
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ],
                         [
                             {
                                 "__type__": "seat",
                                 "seat_number": 0,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 1,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 2,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 3,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 4,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 5,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 6,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 7,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 8,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 9,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 10,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 11,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 12,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 13,
-                                "is_occupied": true
+                                "is_occupied": false
                             },
                             {
                                 "__type__": "seat",
                                 "seat_number": 14,
-                                "is_occupied": true
+                                "is_occupied": false
                             }
                         ]
                     ]
                 ],
-                "audience_count": 300,
+                "audience_count": 303,
                 "capacity": 300
             }
         ]
