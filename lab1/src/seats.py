@@ -25,16 +25,7 @@ class Ticket:
     @classmethod
     def _next_id(cls) -> str:
         cls._counter += 1
-        return f"TKT-{cls._counter:06d}"
-
-    @classmethod
-    def _update_counter(cls, ticket_id: str):
-        import re
-        numbers = re.findall(r'\d+', ticket_id)
-        if numbers:
-            max_num = max(int(n) for n in numbers)
-            if max_num >= cls._counter:
-                cls._counter = max_num
+        return str(cls._counter)
 
     def __init__(self, price: float, setting: Any, sector: int, row: int, seat: int,
                  hall_id: str, hall_obj: Optional["AuditoryHall"] = None):
@@ -49,30 +40,29 @@ class Ticket:
         self.ticket_id = Ticket._next_id()
 
     def set_ticket_id(self, tid: str):
+        """Устанавливает ID билета вручную (при загрузке из JSON)."""
         self.ticket_id = tid
-        Ticket._update_counter(tid)
+        try:
+            num = int(tid)
+            if num >= Ticket._counter:
+                Ticket._counter = num
+        except ValueError:
+            pass
 
     def link_hall(self, hall: "AuditoryHall"):
         if self.hall_id != hall.hall_id:
             raise ValueError(f"ID зала не совпадает: {self.hall_id} != {hall.hall_id}")
         self._hall = hall
 
-    @property
-    def hall(self):
-        if self._hall is None:
-            raise RuntimeError(f"Зал для билета {self.ticket_id} не привязан")
-        return self._hall
-
     def sell_ticket(self) -> bool:
         from exception import InvalidSeatException, TheaterException
 
         if self.is_sold:
             raise TheaterException(f"Билет {self.ticket_id} уже продан")
-        
+
         # Помечаем билет как проданный и занимаем место
         self.is_sold = True
-        current_hall = self.hall
-        current_hall.occupy_seat(self.sector, self.row, self.seat)
+        self._hall.occupy_seat(self.sector, self.row, self.seat)
         return True
 
     def to_dict(self) -> Dict[str, Any]:

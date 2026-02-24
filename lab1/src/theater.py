@@ -42,9 +42,6 @@ class Theater:
             self.ticket_manager.add_ticket(ticket)
         return tickets
 
-    def add_ticket(self, ticket):
-        self.ticket_manager.add_ticket(ticket)
-
     def sell_ticket(self, ticket_id: str) -> bool:
         ticket = next((t for t in self.ticket_manager.tickets if t.ticket_id == ticket_id), None)
         if ticket:
@@ -75,9 +72,11 @@ class Theater:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Theater":
         theater = cls(data["name"])
-        theater.staff_manager = theater.staff_manager.__class__.from_dict(data["staff_manager"])
-        theater.performance_manager = theater.performance_manager.__class__.from_dict(data["performance_manager"])
-        theater.resource_manager = theater.resource_manager.__class__.from_dict(data["resource_manager"])
+        
+        # Восстанавливаем менеджеров
+        theater.staff_manager = StaffManager.from_dict(data["staff_manager"])
+        theater.performance_manager = PerformanceManager.from_dict(data["performance_manager"])
+        theater.resource_manager = ResourceManager.from_dict(data["resource_manager"])
 
         # Восстанавливаем связи постановок с залами и билетами
         for setting in theater.performance_manager.settings:
@@ -87,15 +86,6 @@ class Theater:
                     setting.link_hall_and_tickets(hall, theater.ticket_manager)
                 except Exception:
                     pass
-
-        # Восстанавливаем связи билетов с постановками
-        settings_by_name = {s.name: s for s in theater.performance_manager.settings}
-        for ticket in theater.ticket_manager.tickets:
-            if hasattr(ticket, '_pending_setting_name') and ticket._pending_setting_name:
-                setting = settings_by_name.get(ticket._pending_setting_name)
-                if setting:
-                    ticket.link_setting(setting)
-                ticket._pending_setting_name = None
 
         return theater
 
@@ -113,9 +103,3 @@ class Theater:
             self.performance_manager = loaded_theater.performance_manager
             self.ticket_manager = loaded_theater.ticket_manager
 
-    def reset(self):
-        self.staff_manager = self.staff_manager.__class__()
-        self.performance_manager = self.performance_manager.__class__()
-        self.ticket_manager = self.ticket_manager.__class__()
-        self.resource_manager = self.resource_manager.__class__()
-        self.resource_manager.hall_manager = self.resource_manager.hall_manager.__class__()

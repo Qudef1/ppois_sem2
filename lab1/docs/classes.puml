@@ -1,38 +1,44 @@
 @startuml
-' Диаграмма классов театральной системы
 
-' ========== Иерархия сотрудников ==========
 class Person {
     +name: str
-    +get_age(): int
+    +__age: int
+    +get_age(): int 
+    +to_dict() : Dict<String, Any>
+    +{static} from_dict(data : Dict<String, Any>) : Person
 }
 
 class Staff extends Person {
+    +salary: float
     +get_salary(): float
 }
 
 class Actor extends Staff {
     +role: str
+    +assigned_costumes: Dict<String, Any>
     +attend_repetition(rep: Repetition): bool
     +assign_costume(costume: Costume)
-    +play(setting: Setting): str
-    +perform_on_stage(stage: Stage, setting: Setting): str
+    +get_costumes: Dict<String, Any>
 }
 
 class Director extends Staff {
-    +direct_setting(setting: Setting)
+    +directed_settings: List[Settings] = []
+    +direct_setting(setting: Setting) 
 }
 
-' ========== Постановки и репетиции ==========
 class Action {
     +name: str
     +date: datetime
     +durability: float
+    +to_dict() : Dict<String, Any>
+    +{static} from_dict(data : Dict<String, Any>) : Action
 }
 
 class Setting extends Action {
     +director: Director
-    +cast: List[Actor]
+    +_pending_hall_id: str
+    +_pending_tickets_data: List[Ticket]
+    +cast: List[Any]
     +base_price: float
     +add_cast(actor: Actor)
     +bind_to_hall(hall: AuditoryHall, base_price: float): List[Ticket]
@@ -44,10 +50,28 @@ class Repetition extends Action {
     +check_list(staff: Staff)
 }
 
-' ========== Зал и билеты ==========
 class Seat {
     +seat_number: int
     +is_occupied: bool
+    +to_dict() : Dict<String, Any>
+    +{static} from_dict(data : Dict<String, Any>) : Seat
+}
+
+class Ticket {
+    +ticket_id: str
+    +price: float
+    +sector: int
+    +hall: AuditoryHall
+    +row: int
+    +seat: int
+    +is_sold(): bool
+    +sell_ticket(): bool
+    +_next_id(): str
+    +_update_counter()
+    +set_ticket_id()
+    +link_setting(setting: Setting)
+    +to_dict() : Dict<String, Any>
+    +{static} from_dict(data : Dict<String, Any>) : Ticket
 }
 
 class AuditoryHall {
@@ -57,21 +81,13 @@ class AuditoryHall {
     +rows_per_sector: int
     +seats_per_row: int
     +capacity: int
+    +audience_count: int = 0
+    +capacity: int
+    +seats: List[[[Seats]]]
     +is_seat_available(sector, row, seat): bool
     +occupy_seat(sector, row, seat)
 }
 
-class Ticket {
-    +ticket_id: str
-    +price: float
-    +sector: int
-    +row: int
-    +seat: int
-    +is_sold: bool
-    +sell_ticket(): bool
-}
-
-' ========== Ресурсы ==========
 class Stage {
     +name: str
     +capacity: int
@@ -90,23 +106,31 @@ class CostumeRoom {
     +costume_ids: List[str]
 }
 
-' ========== Менеджеры ==========
 class StaffManager {
+    +staff: List[Staff]
     +add_staff(staff: Staff)
     +get_staff(): List[Staff]
+    +to_dict() : Dict<String, Any>
+    +{static} from_dict(data : Dict<String, Any>) : Person
 }
 
 class HallManager {
+    +halls: List[AuditoryHalls]
     +add_hall(hall: AuditoryHall)
     +get_hall_by_id(id: str): AuditoryHall
+    +to_dict() : Dict<String, Any>
+    +{static} from_dict(data : Dict<String, Any>) : HallManager
 }
 
 class PerformanceManager {
+    +settings: List[Settings]
+    +repetitions: List[Repetitions]
     +add_setting(setting: Setting)
     +add_repetition(rep: Repetition)
 }
 
 class TicketManager {
+    +tickets: List[Tickets]
     +add_ticket(ticket: Ticket)
     +sell_ticket(id: str, hall_manager: HallManager): bool
 }
@@ -116,9 +140,10 @@ class ResourceManager {
     +add_stage(stage: Stage)
     +add_costume_room(room: CostumeRoom)
     +add_costume(costume: Costume)
+    +to_dict() : Dict<String, Any>
+    +{static} from_dict(data : Dict<String, Any>) : ResourceManager
 }
 
-' ========== Основной класс ==========
 class Theater {
     +name: str
     +staff_manager: StaffManager
@@ -126,7 +151,7 @@ class Theater {
     +performance_manager: PerformanceManager
     +ticket_manager: TicketManager
     +resource_manager: ResourceManager
-    
+
     +add_staff(staff: Staff)
     +add_hall(hall: AuditoryHall)
     +add_setting(setting: Setting)
@@ -139,47 +164,14 @@ class Theater {
     +load_from_file(filepath: str)
 }
 
-' ========== Исключения ==========
 class TheaterException
 class InvalidSeatException extends TheaterException
 class TicketNotFoundException extends TheaterException
-
-' ========== Связи ==========
-Person <|-- Staff
-Staff <|-- Actor
-Staff <|-- Director
-
-Action <|-- Setting
-Action <|-- Repetition
-
-TheaterException <|-- InvalidSeatException
-TheaterException <|-- TicketNotFoundException
 
 Theater *-- StaffManager
 Theater *-- HallManager
 Theater *-- PerformanceManager
 Theater *-- TicketManager
 Theater *-- ResourceManager
-
-StaffManager o-- Staff
-HallManager o-- AuditoryHall
-PerformanceManager o-- Setting
-PerformanceManager o-- Repetition
-TicketManager o-- Ticket
-ResourceManager *-- HallManager
-ResourceManager o-- Stage
-ResourceManager o-- Costume
-ResourceManager o-- CostumeRoom
-
-AuditoryHall o-- Seat
-Setting --> Director
-Setting --> Actor
-Setting o-- Ticket
-Repetition --> Setting
-Repetition --> Staff
-Ticket --> Setting
-Ticket --> AuditoryHall
-Actor o-- Costume
-Director --> Setting
 
 @enduml

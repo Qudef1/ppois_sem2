@@ -7,10 +7,7 @@ from datetime import datetime
 from theater import Theater
 from actions import Setting, Repetition
 from halls import AuditoryHall
-from seats import Ticket
-from resources import Costume, Stage, CostumeRoom
 from staff import Director, Actor
-from managers import StaffManager, HallManager, PerformanceManager, TicketManager
 from exception import TheaterException
 
 
@@ -193,14 +190,14 @@ class TheaterCLI:
             print("Ошибка: имя актера не может быть пустым")
             return
 
-        birth_date = self.get_validated_date("Введите дату рождения (ГГГГ-ММ-ДД): ")
+        age = self.get_validated_int("Введите возраст актера: ", min_val=18, max_val=100)
         salary = self.get_validated_float("Введите зарплату: ", min_val=0)
 
         role = self.get_user_input("Введите роль актера (Enter для пропуска): ")
         if not role:
             role = None
 
-        actor = Actor(name, birth_date, salary, role)
+        actor = Actor(name, age, salary, role)
         self.theater.add_staff(actor)
         print(f"Актер '{name}' успешно добавлен!")
 
@@ -211,10 +208,10 @@ class TheaterCLI:
             print("Ошибка: имя режиссера не может быть пустым")
             return
 
-        birth_date = self.get_validated_date("Введите дату рождения (ГГГГ-ММ-ДД): ")
+        age = self.get_validated_int("Введите возраст режиссера: ", min_val=25, max_val=100)
         salary = self.get_validated_float("Введите зарплату: ", min_val=0)
 
-        director = Director(name, birth_date, salary)
+        director = Director(name, age, salary)
         self.theater.add_staff(director)
         print(f"Режиссер '{name}' успешно добавлен!")
 
@@ -262,7 +259,7 @@ class TheaterCLI:
         print("\nДоступные актеры:")
         for i, actor in enumerate(actors):
             is_present = actor in selected_rep.attendance_list
-            status = "✓" if is_present else " "
+            status = "+" if is_present else " "
             print(f"{i+1}. [{status}] {actor.name}")
 
         print("\nОтметьте актеров (введите номера через пробел):")
@@ -290,14 +287,13 @@ class TheaterCLI:
             print("Нет доступных билетов для продажи.")
             return
         
-        # Шаг 1: Выбор постановки
         settings_map = {}
         for t in available:
             if t.setting and t.setting.name not in settings_map:
                 settings_map[t.setting.name] = t.setting
         
         if len(settings_map) == 0:
-            print("Нет доступных постановок.")
+            print("Нет доступных постановок")
             return
         
         print("Доступные постановки:")
@@ -311,7 +307,6 @@ class TheaterCLI:
         
         setting_tickets = [t for t in available if t.setting and t.setting.name == selected_setting_name]
         
-        # Шаг 2: Выбор зала
         halls_map = {}
         for t in setting_tickets:
             if t.hall_id not in halls_map:
@@ -330,7 +325,6 @@ class TheaterCLI:
         
         setting_tickets = [t for t in setting_tickets if t.hall_id == selected_hall_id]
         
-        # Шаг 3: Выбор сектора
         sectors = sorted(set(t.sector for t in setting_tickets))
         if not sectors:
             print("Нет доступных мест.")
@@ -346,11 +340,7 @@ class TheaterCLI:
         
         sector_tickets = [t for t in setting_tickets if t.sector == selected_sector]
         
-        # Шаг 4: Выбор ряда
         rows = sorted(set(t.row for t in sector_tickets))
-        if not rows:
-            print("Нет доступных мест в этом секторе.")
-            return
         
         print("\nДоступные ряды:")
         for i, row in enumerate(rows, 1):
@@ -362,11 +352,7 @@ class TheaterCLI:
         
         row_tickets = [t for t in sector_tickets if t.row == selected_row]
         
-        # Шаг 5: Выбор места
         seats = sorted(set(t.seat for t in row_tickets))
-        if not seats:
-            print("Нет доступных мест в этом ряду.")
-            return
         
         print("\nДоступные места:")
         for i, seat in enumerate(seats, 1):
@@ -425,7 +411,7 @@ class TheaterCLI:
 
         print("\n" + "=" * 70)
         for setting_name, setting_tickets in settings_map.items():
-            print(f"\n📖 Постановка: {setting_name}")
+            print(f"\nПостановка: {setting_name}")
             print("-" * 70)
             
             halls_map = {}
@@ -435,7 +421,7 @@ class TheaterCLI:
                 halls_map[t.hall_id].append(t)
             
             for hall_id, hall_tickets in halls_map.items():
-                print(f"\n  🏛 Зал: {hall_id}")
+                print(f"\nЗал: {hall_id}")
                 
                 sectors_map = {}
                 for t in hall_tickets:
@@ -499,8 +485,8 @@ class TheaterCLI:
         tickets = self.theater.ticket_manager.tickets
         print(f"Билетов: {len(tickets)}")
         sold = sum(1 for t in tickets if t.is_sold)
-        print(f"  - Продано: {sold}")
-        print(f"  - В продаже: {len(tickets) - sold}")
+        print(f" - Продано: {sold}")
+        print(f" - В продаже: {len(tickets) - sold}")
         print(f"Сцен: {len(self.theater.resource_manager.stages)}")
         print(f"Костюмерных: {len(self.theater.resource_manager.costume_rooms)}")
         print(f"Костюмов: {len(self.theater.resource_manager.costumes)}")

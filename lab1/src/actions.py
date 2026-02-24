@@ -108,17 +108,6 @@ class Setting(Action):
             ticket_manager.add_ticket(ticket)
             self.tickets.append(ticket)
 
-        # Синхронизируем места в зале: сбрасываем все и занимаем только проданные
-        for sector in hall.seats:
-            for row in sector:
-                for seat in row:
-                    seat.is_occupied = False
-
-        # Занимаем места для проданных билетов
-        for ticket in self.tickets:
-            if ticket.is_sold:
-                hall.seats[ticket.sector][ticket.row][ticket.seat].is_occupied = True
-
         self._pending_tickets_data = []
         self._pending_hall_id = None
 

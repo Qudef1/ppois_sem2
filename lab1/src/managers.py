@@ -110,15 +110,13 @@ class TicketManager:
         return ticket.sell_ticket()
 
     def to_dict(self) -> Dict[str, Any]:
-        return {"__type__": self.__type__, "tickets": [t.to_dict() for t in self.tickets]}
+        # Билеты не сохраняются здесь — они сохраняются в Setting.tickets
+        return {"__type__": self.__type__, "tickets": []}
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "TicketManager":
-        from seats import Ticket
-        manager = cls()
-        for ticket_data in data.get("tickets", []):
-            manager.add_ticket(Ticket.from_dict(ticket_data))
-        return manager
+        # Билеты не загружаются здесь — они загружаются из Setting
+        return cls()
 
 
 class ResourceManager:

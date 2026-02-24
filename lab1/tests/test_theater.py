@@ -219,3 +219,7 @@ class TestTheater(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+# python3-coverage run -m unittest discover tests
+# coverage report

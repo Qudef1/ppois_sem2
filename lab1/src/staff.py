@@ -36,14 +36,6 @@ class Staff(Person):
 
 
 class Actor(Staff):
-    DEFAULT_REPLIKES = {
-        "Hamlet": "Быть или не быть — вот в чём вопрос!",
-        "King": "Я король! Я требую подчинения!",
-        "Queen": "О, мой бедный сын...",
-        "Knight": "За короля и страну!",
-        "Jester": "Смех продлевает жизнь, милорд!",
-    }
-
     def __init__(self, name: str, age: int, salary: float, role: str = None):
         super().__init__(name, age, salary)
         self.role = role
@@ -89,23 +81,6 @@ class Actor(Staff):
 
     def get_costumes(self) -> Dict[str, Any]:
         return self.assigned_costumes
-
-    def play(self, setting: Any = None) -> str:
-        """Актёр произносит реплику на сцене."""
-        if self.role:
-            replika = self.DEFAULT_REPLIKES.get(self.role)
-            if replika:
-                return f"[{self.name} в роли '{self.role}']: {replika}"
-        if setting and hasattr(setting, 'name'):
-            return f"[{self.name} в постановке '{setting.name}']: (импровизирует...)"
-        return f"[{self.name}]: (выходит на поклон)"
-
-    def perform_on_stage(self, stage: Any, setting: Any = None) -> str:
-        """Выступление актёра на сцене."""
-        if not hasattr(stage, 'name') or not stage.is_available:
-            return f"[{self.name}]: Сцена '{stage.name if hasattr(stage, 'name') else 'N/A'}' недоступна"
-        replika = self.play(setting)
-        return f"=== СЦЕНА '{stage.name}' ===\n{replika}\n=== КОНЕЦ ==="
 
 
 class Director(Staff):

@@ -1,174 +1,67 @@
 @startuml
-' Диаграмма состояний театральной системы
 
-[*] --> Idle: Инициализация
+[*] --> Idle
 
 Idle: Ожидание команды
 
-' Основные операции
-Idle --> AddingHall: Добавить зал
-Idle --> AddingSetting: Добавить постановку
-Idle --> AddingStaff: Добавить сотрудника
-Idle --> AddingRepetition: Добавить репетицию
-Idle --> BindingSettingToHall: Привязать постановку к залу
-Idle --> SellingTicket: Продать билет
-Idle --> ViewingInfo: Просмотр информации
-Idle --> SavingState: Сохранить
-Idle --> LoadingState: Загрузить
-Idle --> ManagingCostumes: Управление костюмами
+Idle --> Adding: Добавить
+Idle --> Selling: Продать билет
+Idle --> Binding: Привязать постановку
+Idle --> Viewing: Информация
+Idle --> Saving: Сохранить
+Idle --> Loading: Загрузить
+Idle --> Repetitions: Репетиции
 
-' ========== Добавление зала ==========
-state AddingHall {
-    [*] --> EnterDetails: Ввод данных
-    EnterDetails --> Validating: Проверка
-    Validating --> Creating: Создание AuditoryHall
-    Creating --> [*]
-    
-    Validating --> Error: Ошибка валидации
-    Error --> EnterDetails: Повтор
-}
-AddingHall --> Idle: Готово
 
-' ========== Добавление постановки ==========
-state AddingSetting {
-    [*] --> EnterDetails: Ввод данных
-    EnterDetails --> SelectingDirector: Выбор режиссёра
-    SelectingDirector --> Creating: Создание Setting
-    Creating --> [*]
-    
-    SelectingDirector --> AddingDirector: Нет режиссёров
-    AddingDirector --> SelectingDirector
-}
-AddingSetting --> Idle: Готово
-
-' ========== Добавление сотрудника ==========
-state AddingStaff {
-    [*] --> SelectType <<choice>>
-    
-    SelectType --> AddingActor: Actor
-    SelectType --> AddingDirector: Director
-    
-    state AddingActor {
-        [*] --> EnterDetails --> Creating --> [*]
-    }
-    state AddingDirector {
-        [*] --> EnterDetails --> Creating --> [*]
-    }
-}
-AddingStaff --> Idle: Готово
-
-' ========== Добавление репетиции ==========
-state AddingRepetition {
-    [*] --> SelectingSetting: Выбор постановки
-    SelectingSetting --> EnterDate: Ввод даты
-    EnterDate --> Creating: Создание Repetition
-    Creating --> [*]
-}
-AddingRepetition --> Idle: Готово
-
-' ========== Привязка постановки к залу ==========
-state BindingSettingToHall {
-    [*] --> SelectingSetting: Выбор постановки
-    SelectingSetting --> SelectingHall: Выбор зала
-    SelectingHall --> SettingPrice: Установка цены
-    SettingPrice --> GeneratingTickets: Генерация билетов
-    GeneratingTickets --> [*]
-}
-BindingSettingToHall --> Idle: Готово
-
-' ========== Продажа билета ==========
-state SellingTicket {
-    [*] --> EnterTicketId: Ввод ID
-    EnterTicketId --> FindingTicket: Поиск
-    FindingTicket --> CheckingAvailability: Проверка места
-    CheckingAvailability --> Processing: Продажа
-    Processing --> [*]
-    
-    FindingTicket --> NotFound: Не найден
-    CheckingAvailability --> NotAvailable: Место занято
-}
-SellingTicket --> Idle: Готово
-
-' ========== Просмотр информации ==========
-state ViewingInfo {
-    [*] --> SelectSection <<choice>>
-    
-    SelectSection --> ShowingSummary: Сводка
-    SelectSection --> ShowingStaff: Сотрудники
-    SelectSection --> ShowingHalls: Залы
-    SelectSection --> ShowingSettings: Постановки
-    SelectSection --> ShowingTickets: Билеты
-    SelectSection --> Exit: Выход
-}
-ViewingInfo --> Idle: Готово
-
-' ========== Сохранение ==========
-state SavingState {
-    [*] --> EnterPath: Ввод пути
-    EnterPath --> Serializing: Сериализация
-    Serializing --> Writing: Запись в файл
-    Writing --> [*]
-    
-    Writing --> Error: Ошибка
-}
-SavingState --> Idle: Готово
-
-' ========== Загрузка ==========
-state LoadingState {
-    [*] --> ListingFiles: Поиск файлов
-    ListingFiles --> SelectingFile: Выбор файла
-    SelectingFile --> Reading: Чтение
-    Reading --> Deserializing: Десериализация
-    Deserializing --> RestoringRelations: Восстановление связей
-    RestoringRelations --> [*]
-    
-    Reading --> Error: Ошибка чтения
-}
-LoadingState --> Idle: Готово
-
-' ========== Управление костюмами ==========
-state ManagingCostumes {
-    [*] --> SelectAction <<choice>>
-    
-    SelectAction --> CreatingCostume: Создать костюм
-    SelectAction --> AssigningCostume: Назначить актёру
-    
-    state CreatingCostume {
-        [*] --> EnterDetails --> Creating --> [*]
-    }
-    state AssigningCostume {
-        [*] --> SelectingActor --> SelectingCostume --> Assigning --> [*]
-    }
-}
-ManagingCostumes --> Idle: Готово
-
-' ========== Ошибки ==========
-state Error {
-    [*] --> DisplayError: Показ ошибки
-    DisplayError --> [*]
+state Adding {
+    [*] --> EnterData
+    EnterData --> Create
+    Create --> [*]
 }
 
-AddingHall --> Error
-AddingSetting --> Error
-AddingStaff --> Error
-SellingTicket --> Error
-SavingState --> Error
-LoadingState --> Error
-ManagingCostumes --> Error
+state Selling {
+    [*] --> Select
+    Select --> Confirm
+    Confirm --> [*]
+}
 
-' Выход
+state Binding {
+    [*] --> Select
+    Select --> Generate
+    Generate --> [*]
+}
+
+state Viewing {
+    [*] --> Display
+    Display --> [*]
+}
+
+state Saving {
+    [*] --> Write
+    Write --> [*]
+}
+
+state Loading {
+    [*] --> Read
+    Read --> Restore
+    Restore --> [*]
+}
+
+state Repetitions {
+    [*] --> Manage
+    Manage --> [*]
+}
+
+
+Adding --> Idle
+Selling --> Idle
+Binding --> Idle
+Viewing --> Idle
+Saving --> Idle
+Loading --> Idle
+Repetitions --> Idle
+
 Idle --> [*]: Выход
 
-note right of Idle
-    Основное состояние системы.
-    Все операции выполняются через меню.
-end note
-
-note left of RestoringRelations
-    Восстановление связей:
-    - Билеты ↔ Постановки
-    - Билеты ↔ Залы
-    - Сотрудники ↔ Постановки
-end note
 
 @enduml
