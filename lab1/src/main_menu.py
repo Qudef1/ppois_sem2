@@ -843,7 +843,6 @@ class TheaterCLI:
         else:
             print("Название не может быть пустым")
 
-
 if __name__ == "__main__":
     cli = TheaterCLI()
     cli.run()
