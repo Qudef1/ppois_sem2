@@ -174,4 +174,17 @@ Theater *-- PerformanceManager
 Theater *-- TicketManager
 Theater *-- ResourceManager
 
+AuditoryHall *-- Seat
+
+CostumeRoom *-- Costume
+ResourceManager *-- CostumeRoom
+TicketManager *-- Ticket
+StaffManager *-- Actor
+StaffManager *-- Director
+HallManager *-- AuditoryHall
+PerformanceManager *-- Setting
+PerformanceManager *-- Repetition
+
+Stage *-- Costume
+
 @enduml
