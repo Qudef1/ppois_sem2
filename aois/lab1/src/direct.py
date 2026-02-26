@@ -65,11 +65,15 @@ def multiply_direct(val1: str, val2: str, bits: int = 16) -> str:
     return result_sign + mag_result.zfill(bits - 1)
 
 
-def divide_direct(val1: str, val2: str, bits: int = 16) -> str:
-    """Деление двух чисел в прямом коде"""
-    result_sign = '1' if val1[0] != val2[0] else '0'
-    mag_result = divide_magnitudes(val1[1:], val2[1:])
-    
-    if len(mag_result) > bits - 1:
-        mag_result = mag_result[-(bits - 1):]
-    return result_sign + mag_result.zfill(bits - 1)
+def divide_direct(val1: str, val2: str, bits: int = 16, precision: int = 5) -> str:
+    """
+    Деление двух чисел в прямом коде.
+    Возвращает строку с десятичным представлением результата (дробное, меньшее/большее).
+    """
+    mag1, mag2 = val1[1:], val2[1:]
+    float_result = divide_magnitudes(mag1, mag2, precision)
+    # Определяем знак результата
+    if val1[0] != val2[0]:
+        # Отрицательный результат
+        return f"-{float_result}"
+    return float_result

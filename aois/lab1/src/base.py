@@ -22,6 +22,8 @@ def add_binary_strings(a: str, b: str) -> tuple:
 
 def subtract_binary_strings(a: str, b: str) -> str:
     """Вычитание двоичных строк (a - b), предполагается a >= b"""
+    # Дополняем b до длины a
+    b = b.zfill(len(a))
     result = ''
     borrow = 0
     for i in range(len(a) - 1, -1, -1):
@@ -97,26 +99,60 @@ def multiply_magnitudes(mag1: str, mag2: str) -> str:
     return result.lstrip('0') or '0'
 
 
-def divide_magnitudes(dividend: str, divisor: str) -> str:
-    """Деление модулей. Возвращает частное."""
+def divide_magnitudes(dividend: str, divisor: str, precision: int = 5) -> str:
+    """
+    Деление модулей с плавающей точкой (двоичный алгоритм).
+    Всегда делит меньшее число на большее.
+    Возвращает результат в десятичном формате с округлением до precision знаков.
+    """
     dividend = dividend.lstrip('0') or '0'
     divisor = divisor.lstrip('0') or '0'
-    
+
     if divisor == '0':
         raise ValueError("Деление на ноль!")
     if dividend == '0':
-        return '0'
-    if compare_binary(dividend, divisor) < 0:
-        return '0'
-    
-    quotient = '0'
+        return '0.' + '0' * precision
+
+    # Всегда делим меньшее на большее
+    if compare_binary(dividend, divisor) > 0:
+        dividend, divisor = divisor, dividend
+
+    # Двоичное деление: целая часть
+    integer_part = ''
     remainder = '0'
-    
+
     for bit in dividend:
         remainder = (remainder + bit).lstrip('0') or '0'
-        quotient = quotient + '0'
+        integer_part = integer_part + '0'
         if compare_binary(remainder, divisor) >= 0:
             remainder = subtract_binary_strings(remainder, divisor)
-            quotient = quotient[:-1] + '1'
-    
-    return quotient.lstrip('0') or '0'
+            integer_part = integer_part[:-1] + '1'
+
+    integer_part = integer_part.lstrip('0') or '0'
+
+    # Двоичное деление: дробная часть
+    fractional_bits = ''
+    remainder = remainder.lstrip('0') or '0'
+
+    # Генерируем дробные биты (precision десятичных знаков ≈ precision*3.32 двоичных бит)
+    binary_precision = precision * 4 + 4
+
+    for _ in range(binary_precision):
+        remainder = (remainder + '0').lstrip('0') or '0'
+        fractional_bits = fractional_bits + '0'
+        if compare_binary(remainder, divisor) >= 0:
+            remainder = subtract_binary_strings(remainder, divisor)
+            fractional_bits = fractional_bits[:-1] + '1'
+
+    # Преобразуем двоичную дробь в десятичную
+    integer_dec = int(integer_part, 2) if integer_part else 0
+
+    # Конвертируем дробную часть из двоичной в десятичную
+    fractional_dec = 0.0
+    for i, bit in enumerate(fractional_bits):
+        if bit == '1':
+            fractional_dec += 1 / (2 ** (i + 1))
+
+    # Округляем до precision знаков
+    result = integer_dec + fractional_dec
+    return f"{result:.{precision}f}"

@@ -69,22 +69,19 @@ def multiply_inverse(val1: str, val2: str, bits: int = 16) -> str:
         return '1' + invert_bits(mag_result)
 
 
-def divide_inverse(val1: str, val2: str, bits: int = 16) -> str:
-    """Деление двух чисел в обратном коде"""
+def divide_inverse(val1: str, val2: str, bits: int = 16, precision: int = 5) -> str:
+    """
+    Деление двух чисел в обратном коде.
+    Возвращает строку с десятичным представлением результата (дробное, меньшее/большее).
+    """
     mag1 = get_magnitude(val1, 2)
     mag2 = get_magnitude(val2, 2)
-    
+
     if mag2 == '0' * len(mag2):
         raise ValueError("Деление на ноль!")
-    
-    mag_result = divide_magnitudes(mag1, mag2)
-    result_sign = '0' if mag_result == '0' or mag_result == '0' * len(mag_result) else ('1' if val1[0] != val2[0] else '0')
-    
-    if len(mag_result) > bits - 1:
-        mag_result = mag_result[-(bits - 1):]
-    mag_result = mag_result.zfill(bits - 1)
-    
-    if result_sign == '0':
-        return '0' + mag_result
-    else:
-        return '1' + invert_bits(mag_result)
+
+    float_result = divide_magnitudes(mag1, mag2, precision)
+    # Определяем знак результата
+    if val1[0] != val2[0]:
+        return f"-{float_result}"
+    return float_result
