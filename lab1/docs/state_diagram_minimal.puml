@@ -1,0 +1,78 @@
+@startuml
+!theme plain
+
+title Диаграмма состояний TheaterCLI (Минимальная)
+
+skinparam state {
+    BackgroundColor White
+    BorderColor Black
+}
+
+[*] --> MainMenu: Запуск
+
+state MainMenu {
+    [*] --> Idle
+    
+    Idle --> AddMenu: Добавить (зал/постановку/актёра)
+    Idle --> TicketsMenu: Билеты
+    Idle --> InfoMenu: Информация
+    Idle --> SaveLoadMenu: Сохранить/Загрузить
+    Idle --> BindMenu: Привязать постановку к залу
+    Idle --> RepetitionMenu: Репетиции
+    Idle --> Exit: Выход
+}
+
+' ==================== ОСНОВНЫЕ МЕНЮ ====================
+state AddMenu {
+    [*] --> AddHall: Добавить зал
+    AddHall --> Idle: Готово
+    AddMenu --> Idle: Назад
+}
+
+state TicketsMenu {
+    [*] --> SellTicket: Продать билет
+    SellTicket --> Idle: Готово
+    TicketsMenu --> Idle: Назад
+}
+
+state InfoMenu {
+    [*] --> ShowInfo: Показать информацию
+    ShowInfo --> Idle: Готово
+    InfoMenu --> Idle: Назад
+}
+
+state SaveLoadMenu {
+    [*] --> SaveState: Сохранить
+    SaveState --> Idle: Готово
+    SaveLoadMenu --> Idle: Назад
+}
+
+state BindMenu {
+    [*] --> BindSetting: Выбрать постановку и зал
+    BindSetting --> CreateTickets: Создать билеты
+    CreateTickets --> Idle: Готово
+    BindMenu --> Idle: Назад
+}
+
+state RepetitionMenu {
+    [*] --> AddRepetition: Добавить репетицию
+    AddRepetition --> Idle: Готово
+    RepetitionMenu --> Idle: Назад
+}
+
+' ==================== ВЫХОД ====================
+state Exit {
+    [*] --> [*]
+}
+
+' ==================== ПЕРЕХОДЫ ====================
+AddMenu --> MainMenu
+TicketsMenu --> MainMenu
+InfoMenu --> MainMenu
+SaveLoadMenu --> MainMenu
+BindMenu --> MainMenu
+RepetitionMenu --> MainMenu
+
+
+
+@enduml

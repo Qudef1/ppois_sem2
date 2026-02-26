@@ -27,6 +27,11 @@ class Ticket:
         cls._counter += 1
         return str(cls._counter)
 
+    @classmethod
+    def reset_counter(cls):
+        """Сбрасывает счётчик (для тестов)."""
+        cls._counter = 0
+
     def __init__(self, price: float, setting: Any, sector: int, row: int, seat: int,
                  hall_id: str, hall_obj: Optional["AuditoryHall"] = None):
         self.price = price
