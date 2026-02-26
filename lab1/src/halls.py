@@ -48,6 +48,12 @@ class AuditoryHall:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "AuditoryHall":
         hall = cls(data["name"], data["sectors"], data["rows_per_sector"], data["seats_per_row"], data["hall_id"])
+        # Восстанавливаем структуру мест, но не is_occupied - оно будет восстановлено из билетов
         hall.seats = [[[Seat.from_dict(s) for s in row] for row in sector] for sector in data["seats"]]
-        hall.audience_count = data.get("audience_count", 0)
+        # Сбрасываем is_occupied - будет установлено из проданных билетов
+        for sector in hall.seats:
+            for row in sector:
+                for seat in row:
+                    seat.is_occupied = False
+        hall.audience_count = 0
         return hall

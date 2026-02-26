@@ -55,7 +55,7 @@ class Ticket:
         self._hall = hall
 
     def sell_ticket(self) -> bool:
-        from exception import InvalidSeatException, TheaterException
+        from exception import TheaterException
 
         if self.is_sold:
             raise TheaterException(f"Билет {self.ticket_id} уже продан")

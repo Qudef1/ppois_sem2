@@ -10,10 +10,11 @@ from halls import AuditoryHall
 from staff import Director, Actor
 from exception import TheaterException
 
+from time import sleep
 
 class TheaterCLI:
     def __init__(self):
-        name = input("Введите название театра (Enter для 'Default Theater'): ").strip()
+        name = self.get_user_input("Введите название театра (Enter для 'Default Theater'): ").strip()
         self.theater = Theater(name if name else "Default Theater")
         self.current_hall: Optional[AuditoryHall] = None
         self.current_setting: Optional[Setting] = None
@@ -82,7 +83,20 @@ class TheaterCLI:
         print("=" * 50)
 
     def get_user_input(self, msg: str) -> str:
-        return input(msg).strip()
+        try:
+            return input(msg).strip()
+        except KeyboardInterrupt:
+            print("\nПринудительный выход из программы...")
+            sleep(2)
+            lst = ["|","/","-","\\","|","/","-","\\"]
+            for i in lst:
+                os.system('clear')
+                print(i)
+                print()
+                sleep(0.3)
+                
+                
+            quit()
 
     def get_validated_int(self, msg: str, min_val: int = None, max_val: int = None) -> int:
         while True:
@@ -257,10 +271,16 @@ class TheaterCLI:
             return
 
         print("\nДоступные актеры:")
-        for i, actor in enumerate(actors):
+        
+        for i,actor in enumerate(actors):
             is_present = actor in selected_rep.attendance_list
-            status = "+" if is_present else " "
-            print(f"{i+1}. [{status}] {actor.name}")
+            if is_present:
+                actors.remove(actor)
+        if actors == []:
+            print("Нет доступных актеров")
+            return
+        for i, actor in enumerate(actors):
+            print(f"{i+1}. {actor.name}")
 
         print("\nОтметьте актеров (введите номера через пробел):")
         choices = self.get_user_input("> ").split()

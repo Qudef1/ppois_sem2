@@ -223,6 +223,21 @@ class TestGenerateComplexTheater(unittest.TestCase):
         sold = sum(1 for t in loaded.ticket_manager.tickets if t.is_sold)
         self.assertGreater(sold, 0)
 
+        # Проверка синхронизации: проданные билеты == занятые места
+        for hall in loaded.resource_manager.hall_manager.halls:
+            occupied_in_hall = sum(
+                1 for sector in hall.seats
+                for row in sector
+                for seat in row
+                if seat.is_occupied
+            )
+            occupied_by_tickets = sum(
+                1 for t in loaded.ticket_manager.tickets
+                if t.hall_id == hall.hall_id and t.is_sold
+            )
+            self.assertEqual(occupied_in_hall, occupied_by_tickets,
+                f"Зал {hall.name}: места ({occupied_in_hall}) != билеты ({occupied_by_tickets})")
+
         # ==================== СТАТИСТИКА ====================
         print("\n" + "=" * 60)
         print("СТАТИСТИКА ТЕАТРА")

@@ -101,13 +101,7 @@ class Setting(Action):
         from seats import Ticket
 
         self.hall = hall
-        
-        # Сбрасываем все места в зале
-        for sector in hall.seats:
-            for row in sector:
-                for seat in row:
-                    seat.is_occupied = False
-        
+
         # Восстанавливаем билеты и занимаем места для проданных
         for ticket_data in self._pending_tickets_data:
             ticket = Ticket.from_dict(ticket_data)
@@ -115,7 +109,7 @@ class Setting(Action):
             ticket.link_setting(self)
             ticket_manager.add_ticket(ticket)
             self.tickets.append(ticket)
-            
+
             # Если билет продан - занимаем место
             if ticket.is_sold:
                 hall.seats[ticket.sector][ticket.row][ticket.seat].is_occupied = True
