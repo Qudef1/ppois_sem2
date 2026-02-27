@@ -74,6 +74,7 @@ class TheaterCLI:
         print("=" * 50)
 
     def display_repetition_menu(self):
+        """Выводит меню репетиций))"""
         print("\n" + "=" * 50)
         print("РЕПЕТИЦИИ")
         print("=" * 50)

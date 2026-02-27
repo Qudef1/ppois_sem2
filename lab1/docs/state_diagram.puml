@@ -1,0 +1,86 @@
+@startuml
+!theme plain
+scale 1.5
+title Диаграмма состояний TheaterCLI
+
+skinparam state {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+}
+
+' Начальное состояние системы
+[*] --> MainMenu 
+
+
+state MainMenu {
+    state Idle{
+        [*] --> GetUserInput 
+    }
+
+    [*] --> Idle 
+    
+    
+    Idle --> AddMenu : Добавить сущность
+    Idle --> TicketsMenu : Билеты
+    Idle --> InfoMenu : Информация
+    Idle --> SaveLoadMenu : Сохранить/Загрузить
+    Idle --> BindMenu : Привязать
+    Idle --> RepetitionMenu : Репетиции
+    Idle --> [*] : Выход из программы
+    
+    
+    AddMenu --> ReturnToMainMenu
+    TicketsMenu --> ReturnToMainMenu
+    InfoMenu --> ReturnToMainMenu
+    SaveLoadMenu --> ReturnToMainMenu
+    BindMenu --> ReturnToMainMenu
+    RepetitionMenu --> ReturnToMainMenu
+
+    
+    ReturnToMainMenu --> Idle
+}
+
+state AddMenu {
+    [*] --> AddHall : Добавить зал
+    [*] --> AddActor : Добавить актера
+    [*] --> AddDirector : Добавить режиссера
+    [*] --> AddSetting : Добавить постановку
+    AddHall --> [*]
+    AddActor --> [*]
+    AddDirector --> [*]
+    AddSetting --> [*]
+}
+
+state TicketsMenu {
+    [*] --> SellTicket : Продать билет
+    [*] --> ShowAvailableTickets : Показать доступные билеты 
+    SellTicket --> [*]
+    ShowAvailableTickets --> [*]
+}
+
+state InfoMenu {
+    [*] --> ShowInfo : Показать информацию
+    ShowInfo --> [*] : Готово
+}
+
+state SaveLoadMenu {
+    [*] --> SaveState : Сохранить
+    [*] --> LoadState
+    LoadState --> [*]
+    SaveState --> [*] : Готово
+}
+
+state BindMenu {
+    [*] --> BindSetting : Выбрать постановку и зал
+    BindSetting --> CreateTickets : Создать билеты
+    CreateTickets --> [*] : Готово
+}
+
+state RepetitionMenu {
+    [*] --> AddRepetition : Выбрать постановку \n к которой будет \n проводиться репетиция
+    AddRepetition --> [*] : Готово
+}
+
+
+@enduml

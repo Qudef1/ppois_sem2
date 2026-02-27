@@ -2,7 +2,7 @@
 
 class Person {
     +name: str
-    +__age: int
+    -__age: int
     +get_age(): int 
     +to_dict() : Dict<String, Any>
     +{static} from_dict(data : Dict<String, Any>) : Person
@@ -12,13 +12,15 @@ class Staff extends Person {
     +salary: float
     +get_salary(): float
 }
+' *-- композиция
+' <-- наследование
 
 class Actor extends Staff {
     +role: str
     +assigned_costumes: Dict<String, Any>
     +attend_repetition(rep: Repetition): bool
     +assign_costume(costume: Costume)
-    +get_costumes: Dict<String, Any>
+    +get_costumes(): Dict<String, Any>
 }
 
 class Director extends Staff {
@@ -66,8 +68,8 @@ class Ticket {
     +seat: int
     +is_sold(): bool
     +sell_ticket(): bool
-    +_next_id(): str
-    +_update_counter()
+    #_next_id(): str
+    #_update_counter()
     +set_ticket_id()
     +link_setting(setting: Setting)
     +to_dict() : Dict<String, Any>
@@ -174,17 +176,17 @@ Theater *-- PerformanceManager
 Theater *-- TicketManager
 Theater *-- ResourceManager
 
-AuditoryHall *-- Seat
+AuditoryHall o-- Seat
 
-CostumeRoom *-- Costume
-ResourceManager *-- CostumeRoom
-TicketManager *-- Ticket
-StaffManager *-- Actor
-StaffManager *-- Director
-HallManager *-- AuditoryHall
-PerformanceManager *-- Setting
-PerformanceManager *-- Repetition
+CostumeRoom o-- Costume
+ResourceManager o-- CostumeRoom
+TicketManager o-- Ticket
+StaffManager o-- Actor
+StaffManager o-- Director
+HallManager o-- AuditoryHall
+PerformanceManager o-- Setting
+PerformanceManager o-- Repetition
 
-Stage *-- Costume
+Stage o-- Costume
 
 @enduml
