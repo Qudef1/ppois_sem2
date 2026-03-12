@@ -87,7 +87,7 @@ def solve_logic_function(input_expr: str = "~((x2+~x3)*~(x1*x3))"):
     print(f"   Числовая форма (Минтермы): V({', '.join(map(str, sdnf_indices))})")
     print()
     print(f"2. СКНФ: {sknf_str}")
-    print(f"   Числовая форма (Макстермы): ^({', '.join(map(str, sknf_indices))})")
+    print(f"   Числовая форма (Макстермы): /\\({', '.join(map(str, sknf_indices))})")
     print()
     print(f"3. Индекс функции (i): {func_index}")
     print(f"   (Двоичный код функции: {''.join(map(str, values))})")
