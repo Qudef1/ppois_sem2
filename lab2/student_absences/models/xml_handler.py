@@ -1,9 +1,10 @@
 # models/xml_handler.py
+"""Обработчики XML: DOM для записи, SAX для чтения."""
+
 import xml.dom.minidom
 import xml.sax
 from typing import List
-from ..models.record import StudentRecord
-from pydantic import ValidationError
+from models.record import StudentRecord
 
 class XMLWriter:
     """Запись в XML используя DOM"""
@@ -65,18 +66,18 @@ class XMLReader(xml.sax.ContentHandler):
                 for key in ['absences_illness', 'absences_other', 'absences_unexcused']:
                     if key in self.current_record:
                         self.current_record[key] = int(self.current_record[key])
-                
-                record = StudentRecord.model_validate(self.current_record)
+
+                record = StudentRecord.from_dict(self.current_record)
                 self.records.append(record)
-            except ValidationError as e:
+            except Exception as e:
                 print(f"Пропущена невалидная запись: {e}")
-            
+
             self.current_record = {}
         elif name in ['full_name', 'group']:
             self.current_record[name] = self.current_data.strip()
         elif name in ['absences_illness', 'absences_other', 'absences_unexcused']:
             self.current_record[name] = self.current_data.strip()
-        
+
         self.current_field = ""
     
     @staticmethod

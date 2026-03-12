@@ -1,7 +1,6 @@
 # views/dialogs/input_dialog.py
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QSpinBox, QPushButton, QFormLayout, QGroupBox, QMessageBox
 from ...models.record import StudentRecord
-from pydantic import ValidationError
 
 class InputDialog(QDialog):
     def __init__(self, parent=None, record: StudentRecord = None):
@@ -75,19 +74,22 @@ class InputDialog(QDialog):
         self.lbl_total.setText(f"Итого пропусков: {total}")
     
     def on_save(self):
-        try:
-            record = StudentRecord(
-                id=self.record.id if self.record else 0,
-                full_name=self.edit_full_name.text(),
-                group=self.edit_group.text(),
-                absences_illness=self.spin_illness.value(),
-                absences_other=self.spin_other.value(),
-                absences_unexcused=self.spin_unexcused.value()
-            )
-            self.accept()
-        except ValidationError as e:
-            errors = '\n'.join([f"• {err['msg']}" for err in e.errors()])
-            QMessageBox.warning(self, "Ошибка валидации", f"Некорректные данные:\n\n{errors}")
+        """Обработка сохранения записи."""
+        record = StudentRecord(
+            id=self.record.id if self.record else 0,
+            full_name=self.edit_full_name.text(),
+            group=self.edit_group.text(),
+            absences_illness=self.spin_illness.value(),
+            absences_other=self.spin_other.value(),
+            absences_unexcused=self.spin_unexcused.value()
+        )
+        
+        is_valid, error = record.validate()
+        if not is_valid:
+            QMessageBox.warning(self, "Ошибка валидации", error)
+            return
+        
+        self.accept()
     
     def get_record(self) -> StudentRecord:
         return StudentRecord(

@@ -1,12 +1,16 @@
 import sqlite3
+from pathlib import Path
 from typing import List, Tuple
-from ..models.record import StudentRecord
-from ..models.criteria import SearchCriteria
-from ..models.config import DATABASE_PATH, PAGE_SIZE_DEFAULT
+from models.record import StudentRecord
+from models.criteria import SearchCriteria
+from models.config import DATABASE_PATH, PAGE_SIZE_DEFAULT
 
 class Database:
-    def __init__(self,db_path: str = None):
+    def __init__(self, db_path: str = None):
         self.db_path = db_path or DATABASE_PATH
+        # Создаём директорию если не существует
+        db_dir = Path(self.db_path).parent
+        db_dir.mkdir(parents=True, exist_ok=True)
         self.init_db()
 
     def get_connection(self):
@@ -21,7 +25,7 @@ class Database:
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         full_name TEXT NOT NULL,
                         group_number TEXT NOT NULL,
-                         absences_illness INTEGER DEFAULT 0,
+                        absences_illness INTEGER DEFAULT 0,
                         absences_other INTEGER DEFAULT 0,
                         absences_unexcused INTEGER DEFAULT 0)
             ''')

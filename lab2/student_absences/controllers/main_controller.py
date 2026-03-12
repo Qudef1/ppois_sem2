@@ -49,10 +49,10 @@ class MainController:
     
     def load_data(self):
         if self.view.current_view == "table":
-            records, total = self.db.get_all_paginated(self.current_page, self.page_size)
+            records, total = self.db.get_all_paged(self.current_page, self.page_size)
             self.view.set_table_data(records)
         else:
-            records, _ = self.db.get_all_paginated(1, 10000)
+            records, _ = self.db.get_all_paged(1, 10000)
             self.view.set_tree_data(records)
         
         self.view.pagination.update_info(self.current_page, self.page_size, total)

@@ -1,13 +1,19 @@
-DATABASE_PATH = "resources/data/students.db"
+from pathlib import Path
 
-XML_DEFAULT_PATH = "resources/data/students.xml"
+# Базовый путь — директория проекта
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+DATABASE_PATH = str(BASE_DIR / "resources" / "data" / "students.db")
+XML_DEFAULT_PATH = str(BASE_DIR / "resources" / "data" / "students.xml")
 
 PAGE_SIZE_DEFAULT = 10
 
 config = type('Config', (), {
     'DATABASE_PATH': DATABASE_PATH,
     'XML_DEFAULT_PATH': XML_DEFAULT_PATH,
-    'page_size_default': PAGE_SIZE_DEFAULT
+    'xml_default_path': XML_DEFAULT_PATH,  # для совместимости
+    'page_size_default': PAGE_SIZE_DEFAULT,
+    'BASE_DIR': BASE_DIR
 })()
 
 FIELDS = {
