@@ -1,4 +1,3 @@
-# controllers/main_controller.py
 from PyQt6.QtWidgets import QApplication, QFileDialog, QMessageBox
 from ..views.main_window import MainWindow
 from ..views.dialogs.input_dialog import InputDialog
@@ -24,7 +23,6 @@ class MainController:
         self.view.pagination.page_changed.connect(self.on_page_changed)
         self.view.pagination.page_size_changed.connect(self.on_page_size_changed)
         
-        # Menu actions через главную window
         self.view.on_action = self.on_menu_action
     
     def on_menu_action(self, action_name):
@@ -85,7 +83,7 @@ class MainController:
             QMessageBox.warning(dialog, "Предупреждение", "Заполните хотя бы одно условие поиска")
             return
         
-        records, total = self.db.search_paginated(criteria, 1, dialog.pagination.page_size)
+        records, total = self.db.search_paged(criteria, 1, dialog.pagination.page_size)
         dialog.set_search_results(records, total)
         dialog.pagination.update_info(1, dialog.pagination.page_size, total)
     

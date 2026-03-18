@@ -1,6 +1,4 @@
-# views/main_window.py
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QMenuBar, QToolBar, QStatusBar, QTreeWidget, QTreeWidgetItem, QSplitter
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QMenuBar, QToolBar, QStatusBar, QTreeWidget, QTreeWidgetItem
 from ..widgets.pagination_window import PaginationWidget
 
 class MainWindow(QMainWindow):

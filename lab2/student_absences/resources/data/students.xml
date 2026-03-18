@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<students>
+    <student id="1">
+        <full_name type="string">Кузнецов Иван Николаевич</full_name>
+        <group type="string">ИС-302</group>
+        <absences_illness type="int">14</absences_illness>
+        <absences_other type="int">0</absences_other>
+        <absences_unexcused type="int">3</absences_unexcused>
+    </student>
+    <student id="4">
+        <full_name type="string">Морозов Иван Артемович</full_name>
+        <group type="string">ПИ-202</group>
+        <absences_illness type="int">10</absences_illness>
+        <absences_other type="int">3</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="5">
+        <full_name type="string">Морозов Артем Алексеевич</full_name>
+        <group type="string">ИБ-402</group>
+        <absences_illness type="int">2</absences_illness>
+        <absences_other type="int">10</absences_other>
+        <absences_unexcused type="int">5</absences_unexcused>
+    </student>
+    <student id="6">
+        <full_name type="string">Волков Сергей Николаевич</full_name>
+        <group type="string">ИС-301</group>
+        <absences_illness type="int">6</absences_illness>
+        <absences_other type="int">1</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="7">
+        <full_name type="string">Смирнов Иван Александрович</full_name>
+        <group type="string">ПИ-202</group>
+        <absences_illness type="int">2</absences_illness>
+        <absences_other type="int">3</absences_other>
+        <absences_unexcused type="int">1</absences_unexcused>
+    </student>
+    <student id="8">
+        <full_name type="string">Иванов Дмитрий Николаевич</full_name>
+        <group type="string">ИБ-401</group>
+        <absences_illness type="int">5</absences_illness>
+        <absences_other type="int">8</absences_other>
+        <absences_unexcused type="int">3</absences_unexcused>
+    </student>
+    <student id="9">
+        <full_name type="string">Васильев Владимир Сергеевич</full_name>
+        <group type="string">ИБ-401</group>
+        <absences_illness type="int">8</absences_illness>
+        <absences_other type="int">0</absences_other>
+        <absences_unexcused type="int">0</absences_unexcused>
+    </student>
+    <student id="10">
+        <full_name type="string">Сидоров Алексей Дмитриевич</full_name>
+        <group type="string">ИС-301</group>
+        <absences_illness type="int">6</absences_illness>
+        <absences_other type="int">7</absences_other>
+        <absences_unexcused type="int">3</absences_unexcused>
+    </student>
+    <student id="11">
+        <full_name type="string">Лебедев Николай Михайлович</full_name>
+        <group type="string">ИС-302</group>
+        <absences_illness type="int">2</absences_illness>
+        <absences_other type="int">9</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="12">
+        <full_name type="string">Сидоров Иван Владимирович</full_name>
+        <group type="string">ИБ-401</group>
+        <absences_illness type="int">9</absences_illness>
+        <absences_other type="int">3</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="13">
+        <full_name type="string">Васильев Владимир Андреевич</full_name>
+        <group type="string">ИС-302</group>
+        <absences_illness type="int">1</absences_illness>
+        <absences_other type="int">10</absences_other>
+        <absences_unexcused type="int">5</absences_unexcused>
+    </student>
+    <student id="14">
+        <full_name type="string">Смирнов Андрей Дмитриевич</full_name>
+        <group type="string">ИБ-402</group>
+        <absences_illness type="int">0</absences_illness>
+        <absences_other type="int">1</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="16">
+        <full_name type="string">Кузнецов Владимир Александрович</full_name>
+        <group type="string">ПИ-202</group>
+        <absences_illness type="int">2</absences_illness>
+        <absences_other type="int">1</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="17">
+        <full_name type="string">Павлов Николай Михайлович</full_name>
+        <group type="string">ИБ-401</group>
+        <absences_illness type="int">4</absences_illness>
+        <absences_other type="int">10</absences_other>
+        <absences_unexcused type="int">3</absences_unexcused>
+    </student>
+    <student id="19">
+        <full_name type="string">Новиков Сергей Михайлович</full_name>
+        <group type="string">ИС-302</group>
+        <absences_illness type="int">8</absences_illness>
+        <absences_other type="int">6</absences_other>
+        <absences_unexcused type="int">3</absences_unexcused>
+    </student>
+    <student id="20">
+        <full_name type="string">Иванов Иван Михайлович</full_name>
+        <group type="string">ИБ-401</group>
+        <absences_illness type="int">4</absences_illness>
+        <absences_other type="int">6</absences_other>
+        <absences_unexcused type="int">0</absences_unexcused>
+    </student>
+    <student id="21">
+        <full_name type="string">Павлов Иван Андреевич</full_name>
+        <group type="string">ИС-302</group>
+        <absences_illness type="int">3</absences_illness>
+        <absences_other type="int">5</absences_other>
+        <absences_unexcused type="int">3</absences_unexcused>
+    </student>
+    <student id="22">
+        <full_name type="string">Кузнецов Владимир Николаевич</full_name>
+        <group type="string">ИС-302</group>
+        <absences_illness type="int">11</absences_illness>
+        <absences_other type="int">1</absences_other>
+        <absences_unexcused type="int">2</absences_unexcused>
+    </student>
+    <student id="23">
+        <full_name type="string">Павлов Николай Иванович</full_name>
+        <group type="string">ИС-302</group>
+        <absences_illness type="int">9</absences_illness>
+        <absences_other type="int">0</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="24">
+        <full_name type="string">Лебедев Александр Сергеевич</full_name>
+        <group type="string">ИС-301</group>
+        <absences_illness type="int">3</absences_illness>
+        <absences_other type="int">10</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="26">
+        <full_name type="string">Смирнов Михаил Андреевич</full_name>
+        <group type="string">ИБ-401</group>
+        <absences_illness type="int">14</absences_illness>
+        <absences_other type="int">8</absences_other>
+        <absences_unexcused type="int">1</absences_unexcused>
+    </student>
+    <student id="27">
+        <full_name type="string">Смирнов Владимир Артемович</full_name>
+        <group type="string">ИС-302</group>
+        <absences_illness type="int">11</absences_illness>
+        <absences_other type="int">6</absences_other>
+        <absences_unexcused type="int">1</absences_unexcused>
+    </student>
+    <student id="28">
+        <full_name type="string">Смирнов Иван Михайлович</full_name>
+        <group type="string">ИБ-402</group>
+        <absences_illness type="int">14</absences_illness>
+        <absences_other type="int">1</absences_other>
+        <absences_unexcused type="int">3</absences_unexcused>
+    </student>
+    <student id="29">
+        <full_name type="string">Иванов Андрей Николаевич</full_name>
+        <group type="string">ИБ-402</group>
+        <absences_illness type="int">7</absences_illness>
+        <absences_other type="int">0</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="30">
+        <full_name type="string">Козлов Иван Владимирович</full_name>
+        <group type="string">ПИ-202</group>
+        <absences_illness type="int">0</absences_illness>
+        <absences_other type="int">9</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="31">
+        <full_name type="string">Попов Дмитрий Дмитриевич</full_name>
+        <group type="string">ПИ-202</group>
+        <absences_illness type="int">4</absences_illness>
+        <absences_other type="int">6</absences_other>
+        <absences_unexcused type="int">2</absences_unexcused>
+    </student>
+    <student id="32">
+        <full_name type="string">Семенов Михаил Николаевич</full_name>
+        <group type="string">ИС-302</group>
+        <absences_illness type="int">8</absences_illness>
+        <absences_other type="int">7</absences_other>
+        <absences_unexcused type="int">0</absences_unexcused>
+    </student>
+    <student id="33">
+        <full_name type="string">Иванов Алексей Владимирович</full_name>
+        <group type="string">ИБ-402</group>
+        <absences_illness type="int">6</absences_illness>
+        <absences_other type="int">9</absences_other>
+        <absences_unexcused type="int">0</absences_unexcused>
+    </student>
+    <student id="34">
+        <full_name type="string">Соколов Артем Сергеевич</full_name>
+        <group type="string">ИБ-402</group>
+        <absences_illness type="int">2</absences_illness>
+        <absences_other type="int">2</absences_other>
+        <absences_unexcused type="int">3</absences_unexcused>
+    </student>
+    <student id="37">
+        <full_name type="string">Козлов Михаил Сергеевич</full_name>
+        <group type="string">ИС-301</group>
+        <absences_illness type="int">2</absences_illness>
+        <absences_other type="int">0</absences_other>
+        <absences_unexcused type="int">3</absences_unexcused>
+    </student>
+    <student id="38">
+        <full_name type="string">Морозов Александр Александрович</full_name>
+        <group type="string">ИС-301</group>
+        <absences_illness type="int">13</absences_illness>
+        <absences_other type="int">1</absences_other>
+        <absences_unexcused type="int">5</absences_unexcused>
+    </student>
+    <student id="39">
+        <full_name type="string">Сидоров Николай Дмитриевич</full_name>
+        <group type="string">ИБ-401</group>
+        <absences_illness type="int">12</absences_illness>
+        <absences_other type="int">6</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="40">
+        <full_name type="string">Кузнецов Артем Иванович</full_name>
+        <group type="string">ИС-301</group>
+        <absences_illness type="int">4</absences_illness>
+        <absences_other type="int">6</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="41">
+        <full_name type="string">Петров Иван Артемович</full_name>
+        <group type="string">ИС-302</group>
+        <absences_illness type="int">1</absences_illness>
+        <absences_other type="int">4</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="42">
+        <full_name type="string">Смирнов Николай Михайлович</full_name>
+        <group type="string">ПИ-202</group>
+        <absences_illness type="int">7</absences_illness>
+        <absences_other type="int">9</absences_other>
+        <absences_unexcused type="int">0</absences_unexcused>
+    </student>
+    <student id="43">
+        <full_name type="string">Васильев Артем Алексеевич</full_name>
+        <group type="string">ИС-302</group>
+        <absences_illness type="int">5</absences_illness>
+        <absences_other type="int">5</absences_other>
+        <absences_unexcused type="int">5</absences_unexcused>
+    </student>
+    <student id="44">
+        <full_name type="string">Кузнецов Владимир Николаевич</full_name>
+        <group type="string">ИС-301</group>
+        <absences_illness type="int">9</absences_illness>
+        <absences_other type="int">2</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="45">
+        <full_name type="string">Семенов Михаил Иванович</full_name>
+        <group type="string">ИБ-401</group>
+        <absences_illness type="int">6</absences_illness>
+        <absences_other type="int">1</absences_other>
+        <absences_unexcused type="int">4</absences_unexcused>
+    </student>
+    <student id="47">
+        <full_name type="string">Попов Иван Андреевич</full_name>
+        <group type="string">ИБ-402</group>
+        <absences_illness type="int">11</absences_illness>
+        <absences_other type="int">1</absences_other>
+        <absences_unexcused type="int">1</absences_unexcused>
+    </student>
+    <student id="48">
+        <full_name type="string">Лебедев Артем Николаевич</full_name>
+        <group type="string">ИБ-402</group>
+        <absences_illness type="int">13</absences_illness>
+        <absences_other type="int">6</absences_other>
+        <absences_unexcused type="int">1</absences_unexcused>
+    </student>
+    <student id="49">
+        <full_name type="string">Васильев Сергей Сергеевич</full_name>
+        <group type="string">ИС-301</group>
+        <absences_illness type="int">4</absences_illness>
+        <absences_other type="int">0</absences_other>
+        <absences_unexcused type="int">1</absences_unexcused>
+    </student>
+    <student id="51">
+        <full_name type="string">Фдлыова Kkd</full_name>
+        <group type="string">ЭЭ;;</group>
+        <absences_illness type="int">4</absences_illness>
+        <absences_other type="int">0</absences_other>
+        <absences_unexcused type="int">6</absences_unexcused>
+    </student>
+</students>
