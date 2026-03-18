@@ -1,142 +1,230 @@
 class CNFParser:
-    def __init__(self, formula):
+    def __init__(self, formula: str):
         self.formula = formula.replace(' ', '')
         self.pos = 0
         self.length = len(self.formula)
-        self.error = None
-        self.operator_count = 0
-        self.bracket_count = 0
-    
-    def peek(self, offset=0):
+        self.error: str | None = None
+
+    def peek(self, offset: int = 0) -> str | None:
         idx = self.pos + offset
-        if idx < self.length:
-            return self.formula[idx]
-        return None
-    
-    def peek_string(self, length):
-        return self.formula[self.pos:self.pos + length]
-    
-    def consume(self, count=1):
+        return self.formula[idx] if idx < self.length else None
+
+    def peek2(self) -> str:
+        return self.formula[self.pos:self.pos + 2]
+
+    def consume(self, count: int = 1) -> str:
         result = self.formula[self.pos:self.pos + count]
         self.pos += count
         return result
-    
-    def is_variable_start(self, char):
-        return char.isalpha() and char.isupper()
-    
-    def parse_variable(self):
-        """Переменная: заглавная буква + цифры 1-9 (не 0)"""
-        if self.pos >= self.length:
+
+    def expect(self, char: str) -> bool:
+        if self.peek() != char:
+            self.error = f"Ожидается '{char}', найдено '{self.peek()}' на позиции {self.pos}"
             return False
-        
-        char = self.peek()
-        if not self.is_variable_start(char):
-            return False
-        
         self.consume()
-        
+        return True
+
+    def parse_variable(self) -> bool:
+        """
+        Переменная: [A-Z][1-9]*
+        Заглавная буква, за которой могут идти цифры 1-9 (не 0).
+        """
+        if self.pos >= self.length:
+            self.error = "Неожиданный конец формулы, ожидается переменная"
+            return False
+
+        ch = self.peek()
+        if not (ch.isalpha() and ch.isupper()):
+            self.error = (
+                f"Ожидается заглавная буква (переменная), "
+                f"найдено '{ch}' на позиции {self.pos}"
+            )
+            return False
+        self.consume()
+
         while self.pos < self.length and self.peek().isdigit():
             if self.peek() == '0':
                 self.error = "Цифра 0 в имени переменной запрещена"
                 return False
             self.consume()
-        
+
         return True
-    
-    def parse_literal(self):
-        """
-        Литерал: переменная или !переменная
-        ! считается оператором
-        """
-        if self.pos >= self.length:
-            return False
-        
-        if self.peek() == '!':
-            self.consume()
-            self.operator_count += 1
-            
-            if self.peek() == '(':
-                self.error = "Отрицание применяется только к переменной: !A"
-                return False
-            
-            if not self.parse_variable():
-                self.error = "После ! должна быть переменная"
-                return False
-        else:
-            if not self.parse_variable():
-                return False
-        
-        return True
-    
-    def parse_atom(self):
-        """
-        Атом: литерал или (выражение)
-        """
-        if self.pos >= self.length:
-            return False
-        
+
+    def parse_literal(self) -> bool:
         if self.peek() == '(':
-            self.consume()
-            self.bracket_count += 1
-            
-            if not self.parse_expression():
+            # Может быть (!переменная) — смотрим вперёд
+            if self.peek(1) == '!':
+                self.consume()          # '('
+                self.consume()          # '!'
+
+                if self.peek() == '(':
+                    self.error = "Отрицание применяется только к переменной: (!A), а не (!(...))"
+                    return False
+
+                if not self.parse_variable():
+                    if not self.error:
+                        self.error = "После '!' должна быть переменная"
+                    return False
+
+                if not self.expect(')'):
+                    return False
+
+                return True
+            else:
+                # Это не литерал — откат: скобка принадлежит верхнему уровню
                 return False
-            
-            if self.peek() != ')':
-                self.error = "Ожидается ')'"
+        else:
+            return self.parse_variable()
+
+    def parse_atomic(self) -> bool:
+        """
+        Клауза КНФ (дизъюнкт):
+            literal                           — одиночный литерал
+            ( literal \/ literal \/ ... )    — дизъюнкция литералов в скобках
+
+        Внутри скобок разрешён ТОЛЬКО оператор \/.
+        Внутри скобок должно быть РОВНО одно вхождение оператора
+        (т.е. ровно два литерала) — за счёт вложенности:
+            (A\/B) — OK
+            ((A\/B)\/C) — OK (левый операнд сам является клаузой в скобках)
+        Запрещено: (A\/B\/C) — два оператора в одних скобках.
+        """
+        if self.peek() != '(':
+            # Одиночный литерал без скобок
+            return self.parse_literal()
+
+        # Смотрим, это скобка клаузы или литерал (!A)?
+        if self.peek(1) == '!':
+            # Это литерал (!A)
+            return self.parse_literal()
+
+        # Открываем скобку клаузы
+        self.consume()  # '('
+
+        # Левый операнд — клауза (рекурсия позволяет ((A\/B)\/C))
+        if not self.parse_atomic():
+            return False
+
+        if self.peek2() != '\\/':
+            self.error = (
+                f"Внутри скобок клаузы ожидается '\\/' на позиции {self.pos}, "
+                f"найдено '{self.peek2()}'"
+            )
+            return False
+        self.consume(2)  # '\/'
+
+        # Правый операнд — только литерал (не вложенная клауза),
+        # чтобы запретить (A\/B\/C) в одних скобках
+        if not self.parse_literal():
+            if not self.error:
+                self.error = "После '\\/' ожидается литерал"
+            return False
+
+        # Проверяем, нет ли лишнего оператора в этих же скобках
+        if self.peek2() == '\\/' or self.peek2() == '/\\':
+            self.error = (
+                "Каждая операция должна быть в отдельных скобках. "
+                "Вместо (A\\/B\\/C) пишите ((A\\/B)\\/C)"
+            )
+            return False
+
+        if not self.expect(')'):
+            return False
+
+        return True
+
+    def _is_conjunction_bracket(self) -> bool:
+        """
+        Смотрит вперёд (без изменения pos), чтобы понять:
+        открывающая скобка на текущей позиции — это скобка конъюнкции КНФ
+        вида (X /\\ Y), или скобка клаузы/литерала (X \\/ Y) / литерала (!X)?
+
+        Алгоритм: заходим внутрь внешних скобок (depth=1) и ищем первый
+        оператор на глубине 1. Если это /\\ — конъюнкция КНФ, если \\/ — клауза.
+        """
+        i = self.pos + 1   # сразу за открывающей '('
+        depth = 1
+        length = self.length
+        formula = self.formula
+
+        while i < length and depth > 0:
+            ch = formula[i]
+            if ch == '(':
+                depth += 1
+                i += 1
+            elif ch == ')':
+                depth -= 1
+                i += 1
+            elif depth == 1:
+                op = formula[i:i+2]
+                if op == '/\\':
+                    return True
+                if op == '\\/':
+                    return False
+                i += 1
+            else:
+                i += 1
+
+        return False
+
+    def parse_cnf(self) -> bool:
+        if self.peek() != '(':
+            # Нет скобки — одиночная переменная
+            return self.parse_atomic()
+
+        if self._is_conjunction_bracket():
+            # Скобка конъюнкции: ( cnf /\ clause )
+            self.consume()  # '('
+
+            if not self.parse_cnf():
                 return False
-            
-            self.consume()
+
+            if self.peek2() != '/\\':
+                self.error = (
+                    f"Внутри скобок КНФ ожидается '/\\' на позиции {self.pos}, "
+                    f"найдено '{self.peek2()}'"
+                )
+                return False
+            self.consume(2)  # '/\'
+
+            if not self.parse_cnf():
+                if not self.error:
+                    self.error = "После '/\\' ожидается клауза"
+                return False
+
+            if self.peek2() in ('/\\', '\\/'):
+                self.error = (
+                    "Каждая операция должна быть в отдельных скобках. "
+                    "Вместо (A/\\B/\\C) пишите ((A/\\B)/\\C)"
+                )
+                return False
+
+            if not self.expect(')'):
+                return False
+
             return True
         else:
-            return self.parse_literal()
-    
-    def parse_expression(self):
-        """
-        Выражение: атом [оператор атом]
-        Операторы: \/ (дизъюнкция), /\ (конъюнкция)
-        """
-        if not self.parse_atom():
+            return self.parse_atomic()
+
+    def check(self) -> bool:
+        if not self.formula:
+            self.error = "Пустая формула"
             return False
-        
-        while True:
-            if self.peek_string(2) == '/\\':
-                self.consume(2)
-                self.operator_count += 1
-                if not self.parse_atom():
-                    return False
-            elif self.peek_string(2) == '\\/':
-                self.consume(2)
-                self.operator_count += 1
-                if not self.parse_atom():
-                    return False
-            else:
-                break
-        
-        return True
-    
-    def check(self):
-        """Основной метод проверки"""
+
         try:
-            if not self.formula:
-                self.error = "Пустая формула"
+            if not self.parse_cnf():
                 return False
-            
-            if not self.parse_expression():
-                return False
-            
+
             if self.pos != self.length:
-                self.error = f"Непропарсенный остаток: {self.formula[self.pos:]}"
+                remaining = self.formula[self.pos:]
+                self.error = f"Непарсенный остаток: '{remaining}' на позиции {self.pos}"
                 return False
-            
-            if self.bracket_count != self.operator_count:
-                self.error = f"Несоответствие скобок и операторов: {self.bracket_count} скобок, {self.operator_count} операторов"
-                return False
-            
+
             return True
+
         except Exception as e:
             self.error = str(e)
             return False
-    
-    def get_error(self):
+
+    def get_error(self) -> str | None:
         return self.error
