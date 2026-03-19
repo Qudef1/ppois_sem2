@@ -1,3 +1,24 @@
+# Лабораторная работа №1 по дисциплине ЛОИС
+# Выполнена студентом группы 421702 БГУИР Сайковским Антоном Валерьевичем
+# Реализация парсера на Python для проверки является ли формула КНФ.
+# Подробное описание алгоритма:
+# 1. На вход подается строка с формулой
+# 2. Если строка пустая, возвращается False. 
+# 3. Если первый символ не '(', переходим к 4
+# 4. Выполнение parse_atomic()
+# 4.1. Если текущий элемент не '(', переходим к 5
+# 4.2. Если следующий за текущим элементом '!', переходим к 5.
+# 5. parse_literal()
+# 5.1. 
+# 5.2. 
+#
+# 20.03.2026 V1.0 
+# 
+# Источники:
+# https://en.wikipedia.org/wiki/Conjunctive_normal_form
+# 
+# 
+
 class CNFParser:
     def __init__(self, formula: str):
         self.formula = formula.replace(' ', '')
@@ -25,26 +46,21 @@ class CNFParser:
         return True
 
     def parse_variable(self) -> bool:
-        """
-        Переменная: [A-Z][1-9]*
-        Заглавная буква, за которой могут идти цифры 1-9 (не 0).
-        """
         if self.pos >= self.length:
-            self.error = "Неожиданный конец формулы, ожидается переменная"
+            self.error = "Некорректная формула"
             return False
 
         ch = self.peek()
         if not (ch.isalpha() and ch.isupper()):
             self.error = (
-                f"Ожидается заглавная буква (переменная), "
-                f"найдено '{ch}' на позиции {self.pos}"
+                f"Некорректная формула"
             )
             return False
         self.consume()
 
         while self.pos < self.length and self.peek().isdigit():
             if self.peek() == '0':
-                self.error = "Цифра 0 в имени переменной запрещена"
+                self.error = "Некорректная"
                 return False
             self.consume()
 
@@ -52,13 +68,12 @@ class CNFParser:
 
     def parse_literal(self) -> bool:
         if self.peek() == '(':
-            # Может быть (!переменная) — смотрим вперёд
             if self.peek(1) == '!':
-                self.consume()          # '('
-                self.consume()          # '!'
+                self.consume()
+                self.consume()
 
                 if self.peek() == '(':
-                    self.error = "Отрицание применяется только к переменной: (!A), а не (!(...))"
+                    self.error = "Отрицание в КНФ применяется только к переменной: (!A)"
                     return False
 
                 if not self.parse_variable():
@@ -71,56 +86,34 @@ class CNFParser:
 
                 return True
             else:
-                # Это не литерал — откат: скобка принадлежит верхнему уровню
                 return False
         else:
             return self.parse_variable()
 
     def parse_atomic(self) -> bool:
-        """
-        Клауза КНФ (дизъюнкт):
-            literal                           — одиночный литерал
-            ( literal \/ literal \/ ... )    — дизъюнкция литералов в скобках
-
-        Внутри скобок разрешён ТОЛЬКО оператор \/.
-        Внутри скобок должно быть РОВНО одно вхождение оператора
-        (т.е. ровно два литерала) — за счёт вложенности:
-            (A\/B) — OK
-            ((A\/B)\/C) — OK (левый операнд сам является клаузой в скобках)
-        Запрещено: (A\/B\/C) — два оператора в одних скобках.
-        """
         if self.peek() != '(':
-            # Одиночный литерал без скобок
             return self.parse_literal()
 
-        # Смотрим, это скобка клаузы или литерал (!A)?
         if self.peek(1) == '!':
-            # Это литерал (!A)
             return self.parse_literal()
 
-        # Открываем скобку клаузы
         self.consume()  # '('
 
-        # Левый операнд — клауза (рекурсия позволяет ((A\/B)\/C))
         if not self.parse_atomic():
             return False
 
         if self.peek2() != '\\/':
             self.error = (
-                f"Внутри скобок клаузы ожидается '\\/' на позиции {self.pos}, "
+                f"Внутри скобок ожидается '\\/' на позиции {self.pos}, "
                 f"найдено '{self.peek2()}'"
             )
             return False
         self.consume(2)  # '\/'
-
-        # Правый операнд — только литерал (не вложенная клауза),
-        # чтобы запретить (A\/B\/C) в одних скобках
         if not self.parse_literal():
             if not self.error:
                 self.error = "После '\\/' ожидается литерал"
             return False
 
-        # Проверяем, нет ли лишнего оператора в этих же скобках
         if self.peek2() == '\\/' or self.peek2() == '/\\':
             self.error = (
                 "Каждая операция должна быть в отдельных скобках. "
@@ -134,15 +127,7 @@ class CNFParser:
         return True
 
     def _is_conjunction_bracket(self) -> bool:
-        """
-        Смотрит вперёд (без изменения pos), чтобы понять:
-        открывающая скобка на текущей позиции — это скобка конъюнкции КНФ
-        вида (X /\\ Y), или скобка клаузы/литерала (X \\/ Y) / литерала (!X)?
-
-        Алгоритм: заходим внутрь внешних скобок (depth=1) и ищем первый
-        оператор на глубине 1. Если это /\\ — конъюнкция КНФ, если \\/ — клауза.
-        """
-        i = self.pos + 1   # сразу за открывающей '('
+        i = self.pos + 1   
         depth = 1
         length = self.length
         formula = self.formula
@@ -157,10 +142,10 @@ class CNFParser:
                 i += 1
             elif depth == 1:
                 op = formula[i:i+2]
-                if op == '/\\':
+                if op == '/\\': # если на первой глубине скобок конъюнкция, то возвращаем истину
                     return True
                 if op == '\\/':
-                    return False
+                    return False # если дизъюнкция, то это уже не КНФ
                 i += 1
             else:
                 i += 1
@@ -169,12 +154,10 @@ class CNFParser:
 
     def parse_cnf(self) -> bool:
         if self.peek() != '(':
-            # Нет скобки — одиночная переменная
             return self.parse_atomic()
 
         if self._is_conjunction_bracket():
-            # Скобка конъюнкции: ( cnf /\ clause )
-            self.consume()  # '('
+            self.consume()  
 
             if not self.parse_cnf():
                 return False
@@ -189,13 +172,12 @@ class CNFParser:
 
             if not self.parse_cnf():
                 if not self.error:
-                    self.error = "После '/\\' ожидается клауза"
+                    self.error = "После '/\\' ожидается либо дизъюнкт либо атомарная формула"
                 return False
 
             if self.peek2() in ('/\\', '\\/'):
                 self.error = (
                     "Каждая операция должна быть в отдельных скобках. "
-                    "Вместо (A/\\B/\\C) пишите ((A/\\B)/\\C)"
                 )
                 return False
 
@@ -217,7 +199,7 @@ class CNFParser:
 
             if self.pos != self.length:
                 remaining = self.formula[self.pos:]
-                self.error = f"Непарсенный остаток: '{remaining}' на позиции {self.pos}"
+                self.error = f"Парсер не отработал до конца"
                 return False
 
             return True

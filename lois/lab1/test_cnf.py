@@ -1,72 +1,101 @@
+import unittest
 from CnfChecker import CNFParser
 
 
-def test_cnf(formula, expected, description=""):
-    parser = CNFParser(formula)
-    result = parser.check()
-    status = "✓" if result == expected else "✗"
-    error_info = f" ({parser.get_error()})" if parser.get_error() else ""
-    desc = f" # {description}" if description else ""
-    print(f"{status} {formula:35} -> {result:5} (ожидалось {expected:5}){desc}{error_info}")
-    return result == expected
+class TestCnf(unittest.TestCase):
 
+    def test_simple_variable(self):
+        parser = CNFParser("A")
+        self.assertTrue(parser.check())
 
-def run_tests():
-    print("=" * 90)
-    print("ТЕСТЫ НА ПРОВЕРКУ КНФ")
-    print("=" * 90)
+    def test_negation(self):
+        parser = CNFParser("(!A)")
+        self.assertTrue(parser.check())
 
-    passed = 0
-    total = 0
+    def test_disjunction(self):
+        parser = CNFParser("(A\\/B)")
+        self.assertTrue(parser.check())
 
-    print("\n--- ПРАВИЛЬНЫЕ ФОРМУЛЫ (True) ---")
-    tests_true = [
-        ("A", True, "Простая переменная"),
-        ("(!A)", True, "Отрицание"),
-        ("(A\\/B)", True, "Дизъюнкция"),
-        ("(A/\\B)", True, "Конъюнкция"),
-        ("((!A)\\/B)", True, "Отрицание + дизъюнкция"),
-        ("((A\\/B)/\\(C\\/D))", True, "КНФ: 2 дизъюнкта"),
-        ("(A1\\/B2)", True, "Переменные с цифрами"),
-        ("(((A\\/B)/\\(C\\/D))/\\(E\\/F))", True, "КНФ: 3 дизъюнкта"),
-        ("((!A1)\\/B2)", True, "Отрицание + переменные с цифрами"),
-        ("((!A)\\/(!B))", True, "Два отрицания"),
-    ]
+    def test_conjunction(self):
+        parser = CNFParser("(A/\\B)")
+        self.assertTrue(parser.check())
 
-    for formula, expected, desc in tests_true:
-        total += 1
-        if test_cnf(formula, expected, desc):
-            passed += 1
+    def test_negation_disjunction(self):
+        parser = CNFParser("((!A)\\/B)")
+        self.assertTrue(parser.check())
 
-    print("\n--- НЕПРАВИЛЬНЫЕ ФОРМУЛЫ (False) ---")
-    tests_false = [
-        ("(A)", False, "Лишние скобки"),
-        ("((A))", False, "Двойные скобки"),
-        ("((A1)\\/(B2))", False, "Лишние скобки вокруг переменных"),
-        ("(A\\/B\\/C)", False, "Нет скобок для каждой операции"),
-        ("(!A\\/B)", False, "! без скобок"),
-        ("(A0)", False, "Цифра 0"),
-        ("(1)", False, "Только цифра"),
-        ("(a)", False, "Строчная буква"),
-        ("(!((A)\\/(B)))", False, "Отрицание выражения"),
-        ("(A)/\\(B)", False, "Нет скобок для /\\"),
-        ("(!(A))", False, "Отрицание скобки"),
-        ("((A/\\B)\\/(C/\\D))", False, "Дизъюнкция конъюнктов (ДНФ)"),
-        ("(A/\\B)\\/C", False, "Дизъюнкция на верхнем уровне"),
-    ]
+    def test_cnf_two_disjuncts(self):
+        parser = CNFParser("((A\\/B)/\\(C\\/D))")
+        self.assertTrue(parser.check())
 
-    for formula, expected, desc in tests_false:
-        total += 1
-        if test_cnf(formula, expected, desc):
-            passed += 1
+    def test_variables_with_digits(self):
+        parser = CNFParser("(A1\\/B2)")
+        self.assertTrue(parser.check())
 
-    print("\n" + "=" * 90)
-    print(f"РЕЗУЛЬТАТЫ: {passed}/{total} тестов пройдено")
-    print("=" * 90)
+    def test_cnf_three_disjuncts(self):
+        parser = CNFParser("(((A\\/B)/\\(C\\/D))/\\(E\\/F))")
+        self.assertTrue(parser.check())
 
-    return passed == total
+    def test_negation_variables_with_digits(self):
+        parser = CNFParser("((!A1)\\/B2)")
+        self.assertTrue(parser.check())
+
+    def test_two_negations(self):
+        parser = CNFParser("((!A)\\/(!B))")
+        self.assertTrue(parser.check())
+
+    def test_extra_parentheses(self):
+        parser = CNFParser("(A)")
+        self.assertFalse(parser.check())
+
+    def test_double_parentheses(self):
+        parser = CNFParser("((A))")
+        self.assertFalse(parser.check())
+
+    def test_extra_parentheses_around_variables(self):
+        parser = CNFParser("((A1)\\/(B2))")
+        self.assertFalse(parser.check())
+
+    def test_no_parentheses_for_each_operation(self):
+        parser = CNFParser("(A\\/B\\/C)")
+        self.assertFalse(parser.check())
+
+    def test_negation_without_parentheses(self):
+        parser = CNFParser("(!A\\/B)")
+        self.assertFalse(parser.check())
+
+    def test_digit_zero(self):
+        parser = CNFParser("(A0)")
+        self.assertFalse(parser.check())
+
+    def test_only_digit(self):
+        parser = CNFParser("(1)")
+        self.assertFalse(parser.check())
+
+    def test_lowercase_letter(self):
+        parser = CNFParser("(a)")
+        self.assertFalse(parser.check())
+
+    def test_negation_expression(self):
+        parser = CNFParser("(!((A)\\/(B)))")
+        self.assertFalse(parser.check())
+
+    def test_no_parentheses_for_conjunction(self):
+        parser = CNFParser("(A)/\\(B)")
+        self.assertFalse(parser.check())
+
+    def test_negation_parenthesis(self):
+        parser = CNFParser("(!(A))")
+        self.assertFalse(parser.check())
+
+    def test_dnf(self):
+        parser = CNFParser("((A/\\B)\\/(C/\\D))")
+        self.assertFalse(parser.check())
+
+    def test_disjunction_top_level(self):
+        parser = CNFParser("(A/\\B)\\/C")
+        self.assertFalse(parser.check())
 
 
 if __name__ == "__main__":
-    success = run_tests()
-    
+    unittest.main()

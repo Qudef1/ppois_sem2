@@ -35,25 +35,15 @@ def check_formula(formula):
     parser = CNFParser(formula)
     result = parser.check()
     
-    print("\n" + "=" * 90)
+    print("\n")
     print(f"Формула: {formula}")
-    print("-" * 90)
     
     if result:
-        print("✅ Результат: ФОРМУЛА ЯВЛЯЕТСЯ КНФ")
+        print("1 ФОРМУЛА ЯВЛЯЕТСЯ КНФ")
     else:
-        print("❌ Результат: ФОРМУЛА НЕ ЯВЛЯЕТСЯ КНФ")
+        print("0 ФОРМУЛА НЕ ЯВЛЯЕТСЯ КНФ")
         if parser.get_error():
-            print(f"   Ошибка: {parser.get_error()}")
-    
-    # Статистика
-    ops = formula.count('\\/') + formula.count('/\\') + formula.count('!')
-    brackets = formula.count('(')
-    print(f"   Операторов: {ops} (\\/: {formula.count('\\/')}, /\\: {formula.count('/\\')}, !: {formula.count('!')})")
-    print(f"   Пар скобок: {brackets}")
-    print(f"   Соответствие: {'✓' if ops == brackets else '✗'}")
-    print("=" * 90 + "\n")
-    
+            print(f"   Ошибка: {parser.get_error()}")  
     return result
 
 
@@ -65,11 +55,11 @@ def main():
             formula = input("\nВведите формулу (или 'help', 'exit', 'test'): ").strip()
             
             if not formula:
-                print("⚠️  Введите формулу!")
+                print("Введите формулу!")
                 continue
             
             if formula.lower() in ['exit', 'quit', 'выход']:
-                print("\n👋 До свидания!")
+                print("\nДо свидания!")
                 break
             
             if formula.lower() == 'help':
@@ -77,7 +67,7 @@ def main():
                 continue
             
             if formula.lower() == 'test':
-                print("\n🧪 Запуск тестов...\n")
+                print("\nЗапуск тестов...\n")
                 import test_cnf
                 test_cnf.run_tests()
                 continue
@@ -85,10 +75,10 @@ def main():
             check_formula(formula)
             
         except KeyboardInterrupt:
-            print("\n\n👋 До свидания!")
+            print("\n\nДо свидания!")
             break
         except Exception as e:
-            print(f"\n❌ Ошибка: {e}\n")
+            print(f"\nОшибка: {e}\n")
 
 
 if __name__ == "__main__":
