@@ -1,5 +1,3 @@
-"""Модель записи студента."""
-
 from dataclasses import dataclass
 from typing import Optional
 

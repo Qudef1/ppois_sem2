@@ -1,13 +1,12 @@
 from PyQt6.QtWidgets import QApplication, QFileDialog, QMessageBox
-from ..views.main_window import MainWindow
-from ..views.dialogs.input_dialog import InputDialog
-from ..views.dialogs.search_dialog import SearchDialog
-from ..views.dialogs.delete_dialog import DeleteDialog
-from ..views.dialogs.groups_dialog import GroupsDialog
-from ..models.database import Database
-from ..models.xml_handler import XMLWriter, XMLReader
-from ..models.criteria import SearchCriteria
-from ..models.config import config
+from views.main_window import MainWindow
+from views.dialogs.input_dialog import InputDialog
+from views.dialogs.search_dialog import SearchDialog
+from views.dialogs.delete_dialog import DeleteDialog
+from views.dialogs.groups_dialog import GroupsDialog
+from models.database import Database
+from models.xml_handler import XMLWriter, XMLReader
+from models.config import *
 
 class MainController:
     def __init__(self):
@@ -15,7 +14,7 @@ class MainController:
         self.db = Database()
         self.view = MainWindow()
         self.current_page = 1
-        self.page_size = config.page_size_default
+        self.page_size = PAGE_SIZE_DEFAULT
         
         self.connect_signals()
         self.load_data()
@@ -45,25 +44,15 @@ class MainController:
             self.load_xml()
         elif action_name == "save_xml":
             self.save_xml()
-        elif action_name == "view_table":
-            self.view.switch_to_table()
-            self.load_data()
-        elif action_name == "view_tree":
-            self.view.switch_to_tree()
-            self.load_data()
         elif action_name == "about":
             self.show_about()
         elif action_name == "exit":
             self.app.quit()
-    
+
     def load_data(self):
-        if self.view.current_view == "table":
-            records, total = self.db.get_all_paged(self.current_page, self.page_size)
-            self.view.set_table_data(records)
-        else:
-            records, _ = self.db.get_all_paged(1, 10000)
-            self.view.set_tree_data(records)
-        
+        """Загрузить данные в таблицу."""
+        records, total = self.db.get_all_paged(self.current_page, self.page_size)
+        self.view.set_table_data(records)
         self.view.pagination.update_info(self.current_page, self.page_size, total)
     
     def on_page_changed(self, page):
@@ -101,7 +90,6 @@ class MainController:
             QMessageBox.warning(dialog, "Предупреждение", "Заполните хотя бы одно условие поиска")
             return
 
-        # Получаем все результаты поиска (без пагинации)
         records, total = self.db.search_paged(criteria, 1, 10000)  # Большой лимит для всех записей
         dialog.set_search_results(records, total)
     
@@ -138,7 +126,7 @@ class MainController:
     def save_xml(self):
         filepath, _ = QFileDialog.getSaveFileName(
             self.view, "Сохранить в XML", 
-            config.xml_default_path, "XML Files (*.xml)"
+            XML_DEFAULT_PATH, "XML Files (*.xml)"
         )
         if filepath:
             all_records = self.db.get_all()
@@ -149,7 +137,7 @@ class MainController:
         """Загрузить данные из XML файла."""
         filepath, _ = QFileDialog.getOpenFileName(
             self.view, "Загрузить из XML",
-            config.xml_default_path, "XML Files (*.xml)"
+            XML_DEFAULT_PATH, "XML Files (*.xml)"
         )
         if filepath:
             try:

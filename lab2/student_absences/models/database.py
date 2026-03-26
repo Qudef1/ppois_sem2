@@ -55,39 +55,56 @@ class Database:
     def search_paged(self, criteria: SearchCriteria, page: int, page_size: int) -> Tuple[List[StudentRecord], int]:
         """
         Поиск записей с пагинацией.
-        
+
         Args:
             criteria: Критерии поиска.
             page: Номер страницы.
             page_size: Размер страницы.
-            
+
         Returns:
             Кортеж (список записей, общее количество).
         """
         conditions = []
         params = []
 
-        if criteria.group:
-            conditions.append('group_number = ?')
-            params.append(criteria.group)
+        # Вкладка 0: Группа или фамилия
+        if criteria.tab_index == 0:
+            if criteria.group:
+                conditions.append('group_number = ?')
+                params.append(criteria.group)
+            if criteria.surname:
+                conditions.append("full_name LIKE ?")
+                params.append(f"{criteria.surname}%")
 
-        if criteria.surname:
-            conditions.append("full_name LIKE ?")
-            params.append(f"{criteria.surname}%")
+        # Вкладка 1: Вид пропуска + мин. количество
+        elif criteria.tab_index == 1:
+            if criteria.absence_type:
+                field_map = {
+                    'illness': 'absences_illness',
+                    'other': 'absences_other',
+                    'unexcused': 'absences_unexcused'
+                }
+                field = field_map.get(criteria.absence_type)
+                if field:
+                    conditions.append(f"{field} >= ?")
+                    params.append(criteria.min_absences)
 
-        if criteria.absence_type:
-            field_map = {
-                'illness': 'absences_illness',
-                'other': 'absences_other',
-                'unexcused': 'absences_unexcused'
-            }
-            field = field_map.get(criteria.absence_type)
-            if field:
-                conditions.append(f"{field} > 0")
-
-        if criteria.min_absences is not None and criteria.max_absences is not None:
-            conditions.append("(absences_illness + absences_other + absences_unexcused) BETWEEN ? AND ?")
-            params.extend([criteria.min_absences, criteria.max_absences])
+        # Вкладка 2: Фамилия + диапазон по конкретному виду пропусков
+        elif criteria.tab_index == 2:
+            if criteria.surname:
+                conditions.append("full_name LIKE ?")
+                params.append(f"{criteria.surname}%")
+            if criteria.absence_type and criteria.min_absences is not None and criteria.max_absences is not None:
+                # Диапазон по конкретному виду пропуска
+                field_map = {
+                    'illness': 'absences_illness',
+                    'other': 'absences_other',
+                    'unexcused': 'absences_unexcused'
+                }
+                field = field_map.get(criteria.absence_type)
+                if field:
+                    conditions.append(f"{field} BETWEEN ? AND ?")
+                    params.extend([criteria.min_absences, criteria.max_absences])
 
         if not conditions:
             return self.get_all_paged(page, page_size)

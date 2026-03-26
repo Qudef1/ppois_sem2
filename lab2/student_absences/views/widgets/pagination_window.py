@@ -1,4 +1,3 @@
-# widgets/pagination_widget.py
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QSpinBox
 from PyQt6.QtCore import pyqtSignal
 
@@ -17,10 +16,10 @@ class PaginationWidget(QWidget):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         
-        self.btn_first = QPushButton("⏮ Первая")
-        self.btn_prev = QPushButton("◀ Пред.")
-        self.btn_next = QPushButton("След. ▶")
-        self.btn_last = QPushButton("Послед. ⏭")
+        self.btn_first = QPushButton("<-- Первая")
+        self.btn_prev = QPushButton("<- Пред.")
+        self.btn_next = QPushButton("След. ->")
+        self.btn_last = QPushButton("Послед. -->")
         
         self.btn_first.clicked.connect(lambda: self.go_to_page(1))
         self.btn_prev.clicked.connect(self.prev_page)

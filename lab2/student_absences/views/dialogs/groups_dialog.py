@@ -58,10 +58,10 @@ class GroupsDialog(QDialog):
 
         # Таблица студентов
         self.students_table = QTableWidget()
-        self.students_table.setColumnCount(6)
+        self.students_table.setColumnCount(5)
         self.students_table.setHorizontalHeaderLabels([
             "ФИО", "По болезни", "По др. причинам",
-            "Без уважит.", "Итого", "Средний балл"
+            "Без уважит.", "Итого",
         ])
         self.students_table.horizontalHeader().setStretchLastSection(True)
         self.students_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)

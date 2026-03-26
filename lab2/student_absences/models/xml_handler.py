@@ -1,6 +1,3 @@
-# models/xml_handler.py
-"""Обработчики XML: DOM для записи, SAX для чтения."""
-
 import xml.dom.minidom
 import xml.sax
 from typing import List

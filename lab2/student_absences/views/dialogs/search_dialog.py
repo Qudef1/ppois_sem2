@@ -1,8 +1,5 @@
-# views/dialogs/search_dialog.py
-"""Диалог поиска записей."""
-
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QSpinBox, QPushButton, QTabWidget, QWidget, QFormLayout, QComboBox, QTableWidget, QTableWidgetItem
-from ...models.criteria import SearchCriteria
+from models.criteria import SearchCriteria
 
 class SearchDialog(QDialog):
     def __init__(self, parent=None):
@@ -30,18 +27,19 @@ class SearchDialog(QDialog):
         tab1_layout.addRow("Фамилия студента:", self.search1_surname)
         self.tabs.addTab(tab1, "Группа или фамилия")
 
-        # Вкладка 2: Фамилия или вид пропуска
+        # Вкладка 2: Количество пропусков и вид пропуска
         tab2 = QWidget()
         tab2_layout = QFormLayout(tab2)
-        self.search2_surname = QLineEdit()
-        self.search2_surname.setPlaceholderText("Например: Иванов")
+        self.search2_min_absences = QSpinBox()
+        self.search2_min_absences.setRange(0, 999)
+        self.search2_min_absences.setValue(1)
         self.search2_type = QComboBox()
         self.search2_type.addItems(["По болезни", "По другим причинам", "Без уважительной причины"])
-        tab2_layout.addRow("Фамилия студента:", self.search2_surname)
+        tab2_layout.addRow("Мин. количество пропусков:", self.search2_min_absences)
         tab2_layout.addRow("Вид пропуска:", self.search2_type)
-        self.tabs.addTab(tab2, "Фамилия или вид пропуска")
+        self.tabs.addTab(tab2, "Пропуски и вид")
 
-        # Вкладка 3: Фамилия или диапазон пропусков
+        # Вкладка 3: Фамилия + диапазон по конкретному виду пропусков
         tab3 = QWidget()
         tab3_layout = QFormLayout(tab3)
         self.search3_surname = QLineEdit()
@@ -58,7 +56,7 @@ class SearchDialog(QDialog):
         tab3_layout.addRow("Тип пропусков:", self.search3_type)
         tab3_layout.addRow("От:", self.search3_min)
         tab3_layout.addRow("До:", self.search3_max)
-        self.tabs.addTab(tab3, "Фамилия или диапазон")
+        self.tabs.addTab(tab3, "Фамилия + диапазон по виду")
 
         layout.addWidget(self.tabs)
 
@@ -115,27 +113,34 @@ class SearchDialog(QDialog):
     def get_criteria(self) -> SearchCriteria:
         """
         Получить критерии поиска из активной вкладки.
-        
+
         Returns:
             SearchCriteria с заполненными условиями.
         """
         current_tab = self.tabs.currentIndex()
+        type_map = {0: 'illness', 1: 'other', 2: 'unexcused'}
 
         if current_tab == 0:
+            # Вкладка 1: Группа или фамилия
             return SearchCriteria(
                 group=self.search1_group.text().strip() or None,
-                surname=self.search1_surname.text().strip() or None
+                surname=self.search1_surname.text().strip() or None,
+                tab_index=0
             )
         elif current_tab == 1:
-            type_map = {0: 'illness', 1: 'other', 2: 'unexcused'}
+            # Вкладка 2: Количество пропусков и вид пропуска
             return SearchCriteria(
-                surname=self.search2_surname.text().strip() or None,
-                absence_type=type_map.get(self.search2_type.currentIndex())
+                min_absences=self.search2_min_absences.value(),
+                absence_type=type_map.get(self.search2_type.currentIndex()),
+                tab_index=1
             )
         else:
+            # Вкладка 3: Фамилия + диапазон по конкретному виду пропусков
             type_map = {0: 'illness', 1: 'other', 2: 'unexcused'}
             return SearchCriteria(
                 surname=self.search3_surname.text().strip() or None,
+                absence_type=type_map.get(self.search3_type.currentIndex()),
                 min_absences=self.search3_min.value(),
-                max_absences=self.search3_max.value()
+                max_absences=self.search3_max.value(),
+                tab_index=2
             )

@@ -63,10 +63,6 @@ class LogicMinimizer:
             bits_str = " ".join([str(b) for b in row['bits']])
             print(f"{row['index']:<3} | {bits_str:<8} | {row['value']:<2}")
 
-    # =========================================================================
-    # ПРЕОБРАЗОВАНИЕ БИТОВ В ТЕРМЫ
-    # =========================================================================
-    
     def bits_to_term_str_dnf(self, bits_str):
         """ДНФ: 0=~x, 1=x, соединение через *"""
         term = []
@@ -93,10 +89,6 @@ class LogicMinimizer:
     def term_str_to_knf(self, terms_list):
         return "*".join(terms_list) if terms_list else "1"
 
-    # =========================================================================
-    # ЭТАП 1: ПОИСК ПРОСТЫХ ИМПЛИКАНТ (склеивание)
-    # =========================================================================
-    
     def _find_prime_implicants(self, indices):
         """
         Переход от совершенной формы к сокращённой.
@@ -207,10 +199,6 @@ class LogicMinimizer:
         
         return result
 
-    # =========================================================================
-    # ЭТАП 2: ТАБЛИЦА ПОКРЫТИЯ (расчётно-табличный метод)
-    # =========================================================================
-    
     def _build_coverage_table(self, prime_implicants, indices):
         """
         Построение таблицы покрытия (методичка, стр. 3, Таблица 2-3).
@@ -266,10 +254,6 @@ class LogicMinimizer:
         result = [p for i, p in enumerate(prime_implicants) if i not in redundant]
         return result
 
-    # =========================================================================
-    # ЭТАП 2: КАРТА КАРНО (табличный метод)
-    # =========================================================================
-    
     def _get_kmap_layout(self):
         """Генерация кодов Грея для карты Карно."""
         def get_gray(n):
@@ -333,9 +317,7 @@ class LogicMinimizer:
         prime = self._find_prime_implicants(indices)
         return self._remove_redundant_calculation(prime, indices)
 
-    # =========================================================================
     # МЕТОД 1: РАСЧЁТНЫЙ (прямая минимизация ДНФ и КНФ)
-    # =========================================================================
     
     def minimize_calculation_method(self):
         print("\n" + "="*50)
@@ -366,16 +348,13 @@ class LogicMinimizer:
         print(f"МКНФ: {deadend_str}")
         print(f"Соответствие ТКНФ/МКНФ: {'ДА' if reduced_str == deadend_str else 'НЕТ'}")
 
-    # =========================================================================
     # МЕТОД 2: РАСЧЁТНО-ТАБЛИЧНЫЙ (прямая минимизация ДНФ и КНФ)
-    # =========================================================================
     
     def minimize_calculation_table_method(self):
         print("\n" + "="*50)
         print("МЕТОД 2: РАСЧЁТНО-ТАБЛИЧНЫЙ")
         print("="*50)
         
-        # --- ДНФ (прямая минимизация по минтермам) ---
         print("\n[ДНФ - прямая минимизация]")
         self.reduced_dnf_terms = self._find_prime_implicants(self.minterms)
         self.deadend_dnf_terms = self._remove_redundant_table_method(self.reduced_dnf_terms, self.minterms)
@@ -387,7 +366,6 @@ class LogicMinimizer:
         print(f"МДНФ: {deadend_str}")
         print(f"Соответствие ТДНФ/МДНФ: {'ДА' if reduced_str == deadend_str else 'НЕТ'}")
         
-        # --- КНФ (прямая минимизация по макстермам) ---
         print("\n[КНФ - прямая минимизация]")
         self.reduced_knf_terms = self._find_prime_implicants(self.maxterms)
         self.deadend_knf_terms = self._remove_redundant_table_method(self.reduced_knf_terms, self.maxterms)
@@ -399,9 +377,7 @@ class LogicMinimizer:
         print(f"МКНФ: {deadend_str}")
         print(f"Соответствие ТКНФ/МКНФ: {'ДА' if reduced_str == deadend_str else 'НЕТ'}")
 
-    # =========================================================================
     # МЕТОД 3: ТАБЛИЧНЫЙ (прямая минимизация ДНФ и КНФ)
-    # =========================================================================
     
     def minimize_table_method(self):
         print("\n" + "="*50)

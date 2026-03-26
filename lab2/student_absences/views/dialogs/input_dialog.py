@@ -1,6 +1,5 @@
-# views/dialogs/input_dialog.py
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QSpinBox, QPushButton, QFormLayout, QGroupBox, QMessageBox
-from ...models.record import StudentRecord
+from models.record import StudentRecord
 
 class InputDialog(QDialog):
     def __init__(self, parent=None, record: StudentRecord = None):

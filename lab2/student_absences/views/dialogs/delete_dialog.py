@@ -1,6 +1,5 @@
-# views/dialogs/delete_dialog.py
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QSpinBox, QPushButton, QTabWidget, QWidget, QFormLayout, QComboBox, QMessageBox
-from ...models.criteria import SearchCriteria
+from models.criteria import SearchCriteria
 
 class DeleteDialog(QDialog):
     def __init__(self, parent=None):
