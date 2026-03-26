@@ -24,3 +24,29 @@ FIELDS = {
     'absences_other': 'INTEGER',
     'absences_unexcused': 'INTEGER'
 }
+
+CREATE_TABLE_DEFAULT = '''
+                CREATE TABLE IF NOT EXISTS students (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        full_name TEXT NOT NULL,
+                        group_number TEXT NOT NULL,
+                        absences_illness INTEGER DEFAULT 0,
+                        absences_other INTEGER DEFAULT 0,
+                        absences_unexcused INTEGER DEFAULT 0)
+            '''
+
+INSERT_FULL = '''
+                INSERT INTO students (full_name,group_number, absences_illness, 
+                                    absences_other, absences_unexcused)
+                VALUES(?, ?, ?, ?, ?)'''
+
+SELECT_PAGED = '''
+                SELECT id, full_name, group_number, absences_illness, 
+                        absences_other, absences_unexcused
+                FROM students ORDER BY id LIMIT ? OFFSET ?'''
+
+SELECT_ALL = '''
+                SELECT id, full_name, group_number, absences_illness, 
+                       absences_other, absences_unexcused
+                FROM students ORDER BY id
+            '''

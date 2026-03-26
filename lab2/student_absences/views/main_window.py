@@ -50,22 +50,32 @@ class MainWindow(QMainWindow):
         self.statusBar.showMessage("Готово")
     
     def create_menu(self):
+        """Создание меню приложения."""
         menubar = self.menuBar()
-        
+
+        # Меню Файл
         file_menu = menubar.addMenu("Файл")
         file_menu.addAction("Загрузить из XML...").triggered.connect(lambda: self.on_action("load_xml"))
         file_menu.addAction("Сохранить в XML...").triggered.connect(lambda: self.on_action("save_xml"))
         file_menu.addSeparator()
         file_menu.addAction("Выход").triggered.connect(lambda: self.on_action("exit"))
-        
+
+        # Меню Операции
         ops_menu = menubar.addMenu("Операции")
-        ops_menu.addAction("Добавить запись...").triggered.connect(lambda: self.on_action("add"))
-        ops_menu.addAction("Поиск записей...").triggered.connect(lambda: self.on_action("search"))
-        ops_menu.addAction("Удалить записи...").triggered.connect(lambda: self.on_action("delete"))
-        
+        ops_menu.addAction("➕ Добавить запись...").triggered.connect(lambda: self.on_action("add"))
+        ops_menu.addAction("🔍 Поиск записей...").triggered.connect(lambda: self.on_action("search"))
+        ops_menu.addAction("🗑️ Удалить записи...").triggered.connect(lambda: self.on_action("delete"))
+        ops_menu.addSeparator()
+        ops_menu.addAction("📊 Группы и студенты...").triggered.connect(lambda: self.on_action("groups"))
+
+        # Меню Вид
         view_menu = menubar.addMenu("Вид")
         view_menu.addAction("Показать как таблицу").triggered.connect(lambda: self.on_action("view_table"))
         view_menu.addAction("Показать как дерево").triggered.connect(lambda: self.on_action("view_tree"))
+
+        # Меню Помощь
+        help_menu = menubar.addMenu("Помощь")
+        help_menu.addAction("О программе...").triggered.connect(lambda: self.on_action("about"))
     
     def create_toolbar(self):
         toolbar = QToolBar("Main Toolbar")
