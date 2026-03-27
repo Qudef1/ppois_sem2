@@ -8,13 +8,6 @@ XML_DEFAULT_PATH = str(BASE_DIR / "resources" / "data" / "students.xml")
 
 PAGE_SIZE_DEFAULT = 10
 
-config = type('Config', (), {
-    'DATABASE_PATH': DATABASE_PATH,
-    'XML_DEFAULT_PATH': XML_DEFAULT_PATH,
-    'xml_default_path': XML_DEFAULT_PATH,  # для совместимости
-    'page_size_default': PAGE_SIZE_DEFAULT,
-    'BASE_DIR': BASE_DIR
-})()
 
 FIELDS = {
     'id': 'INTEGER',

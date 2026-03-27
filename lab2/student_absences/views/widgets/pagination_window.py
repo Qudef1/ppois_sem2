@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QSpinBox
 from PyQt6.QtCore import pyqtSignal
+from models.config import PAGE_SIZE_DEFAULT
 
 class PaginationWidget(QWidget):
     page_changed = pyqtSignal(int)
@@ -31,7 +32,7 @@ class PaginationWidget(QWidget):
         self.lbl_page_size = QLabel("Записей на странице:")
         self.spin_page_size = QSpinBox()
         self.spin_page_size.setRange(5, 100)
-        self.spin_page_size.setValue(10)
+        self.spin_page_size.setValue(PAGE_SIZE_DEFAULT)
         self.spin_page_size.valueChanged.connect(self.on_page_size_changed)
         
         self.lbl_total = QLabel("Всего записей: 0")

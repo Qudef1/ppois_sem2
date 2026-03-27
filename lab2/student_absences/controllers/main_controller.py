@@ -81,7 +81,7 @@ class MainController:
     def perform_search(self, dialog):
         """
         Выполнить поиск по критериям из диалога.
-        
+
         Args:
             dialog: Экземпляр SearchDialog.
         """
@@ -90,8 +90,9 @@ class MainController:
             QMessageBox.warning(dialog, "Предупреждение", "Заполните хотя бы одно условие поиска")
             return
 
-        records, total = self.db.search_paged(criteria, 1, 10000)  # Большой лимит для всех записей
-        dialog.set_search_results(records, total)
+        # Поиск по всей таблице (без пагинации)
+        records = self.db.search(criteria)
+        dialog.set_search_results(records, len(records))
     
     def delete_records(self):
         """Открыть диалог удаления записей."""
@@ -150,21 +151,6 @@ class MainController:
                 QMessageBox.information(self.view, "Успех", f"Загружено {len(records)} записей")
             except Exception as e:
                 QMessageBox.critical(self.view, "Ошибка", f"Ошибка загрузки: {str(e)}")
-
-    def show_about(self):
-        """Показать диалог о программе."""
-        QMessageBox.about(
-            self.view,
-            "О программе",
-            "Учет пропусков студентов\n\n"
-            "Версия: 1.0\n"
-            "Курс: Проектирование ПО интеллектуальных систем\n"
-            "Лабораторная работа №2\n\n"
-            "Архитектура: MVC (Model-View-Controller)\n"
-            "GUI: PyQt6\n"
-            "БД: SQLite\n"
-            "XML: SAX (чтение) / DOM (запись)"
-        )
 
     def run(self):
         self.view.show()

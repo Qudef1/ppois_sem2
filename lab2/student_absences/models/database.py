@@ -52,17 +52,15 @@ class Database:
 
             return records, total
         
-    def search_paged(self, criteria: SearchCriteria, page: int, page_size: int) -> Tuple[List[StudentRecord], int]:
+    def search(self, criteria: SearchCriteria) -> List[StudentRecord]:
         """
-        Поиск записей с пагинацией.
+        Поиск записей по критериям (без пагинации).
 
         Args:
-            criteria: Критерии поиска.
-            page: Номер страницы.
-            page_size: Размер страницы.
+            criteria: Критерии поиска (с tab_index).
 
         Returns:
-            Кортеж (список записей, общее количество).
+            Список найденных записей.
         """
         conditions = []
         params = []
@@ -107,22 +105,18 @@ class Database:
                     params.extend([criteria.min_absences, criteria.max_absences])
 
         if not conditions:
-            return self.get_all_paged(page, page_size)
+            return self.get_all()
 
         # Используем AND для пересечения условий (все условия должны выполняться)
         where_clause = ' AND '.join(conditions)
-        offset = (page - 1) * page_size
 
         with self.get_connection() as conn:
-            cursor = conn.execute(f'SELECT COUNT(*) FROM students WHERE {where_clause}', params)
-            total = cursor.fetchone()[0]
-
             cursor = conn.execute(f'''
                 SELECT id, full_name, group_number, absences_illness,
                        absences_other, absences_unexcused
                 FROM students WHERE {where_clause}
-                ORDER BY id LIMIT ? OFFSET ?
-            ''', params + [page_size, offset])
+                ORDER BY id
+            ''', params)
 
             records = [StudentRecord(
                 id=row['id'],
@@ -133,30 +127,70 @@ class Database:
                 absences_unexcused=row['absences_unexcused']
             ) for row in cursor.fetchall()]
 
-            return records, total
+            return records
 
     def delete_by_criteria(self, criteria: SearchCriteria) -> int:
+        """
+        Удаление записей по критериям.
+
+        Args:
+            criteria: Критерии удаления (с tab_index).
+
+        Returns:
+            Количество удалённых записей.
+        """
         conditions = []
         params = []
 
-        if criteria.group:
-            conditions.append("group_number = ?")
-            params.append(criteria.group)
-        
-        if criteria.surname:
-            conditions.append("full_name LIKE ?")
-            params.append(f"{criteria.surname}%")
-        
+        # Вкладка 0: Группа или фамилия
+        if criteria.tab_index == 0:
+            if criteria.group:
+                conditions.append("group_number = ?")
+                params.append(criteria.group)
+            if criteria.surname:
+                conditions.append("full_name LIKE ?")
+                params.append(f"{criteria.surname}%")
+
+        # Вкладка 1: Пропуски и вид (>= min_absences по указанному виду)
+        elif criteria.tab_index == 1:
+            if criteria.absence_type:
+                field_map = {
+                    'illness': 'absences_illness',
+                    'other': 'absences_other',
+                    'unexcused': 'absences_unexcused'
+                }
+                field = field_map.get(criteria.absence_type)
+                if field:
+                    conditions.append(f"{field} >= ?")
+                    params.append(criteria.min_absences)
+
+        # Вкладка 2: Фамилия + диапазон по виду
+        elif criteria.tab_index == 2:
+            if criteria.surname:
+                conditions.append("full_name LIKE ?")
+                params.append(f"{criteria.surname}%")
+            if criteria.absence_type and criteria.min_absences is not None and criteria.max_absences is not None:
+                field_map = {
+                    'illness': 'absences_illness',
+                    'other': 'absences_other',
+                    'unexcused': 'absences_unexcused'
+                }
+                field = field_map.get(criteria.absence_type)
+                if field:
+                    conditions.append(f"{field} BETWEEN ? AND ?")
+                    params.extend([criteria.min_absences, criteria.max_absences])
+
         if not conditions:
             return 0
-        
+
+        # Используем OR для удаления (любое условие подходит)
         where_clause = " OR ".join(conditions)
-        
+
         with self.get_connection() as conn:
             cursor = conn.execute(f'DELETE FROM students WHERE {where_clause}', params)
             conn.commit()
             return cursor.rowcount
-        
+
     def clear_all(self):
         with self.get_connection() as conn:
             conn.execute('DELETE FROM students')
