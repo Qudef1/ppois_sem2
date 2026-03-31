@@ -28,7 +28,7 @@ class MainController:
     def on_menu_action(self, action_name):
         """
         Обработка действий меню.
-        
+
         Args:
             action_name: Имя действия.
         """
@@ -44,8 +44,6 @@ class MainController:
             self.load_xml()
         elif action_name == "save_xml":
             self.save_xml()
-        elif action_name == "about":
-            self.show_about()
         elif action_name == "exit":
             self.app.quit()
 
@@ -91,8 +89,8 @@ class MainController:
             return
 
         # Поиск по всей таблице (без пагинации)
-        records = self.db.search(criteria)
-        dialog.set_search_results(records, len(records))
+        records, total = self.db.search(criteria)
+        dialog.set_search_results(records, total)
     
     def delete_records(self):
         """Открыть диалог удаления записей."""
@@ -110,7 +108,7 @@ class MainController:
         """Открыть диалог просмотра групп и студентов."""
         # Получаем все записи
         all_records = self.db.get_all()
-        
+
         # Группируем по номеру группы
         groups_data = {}
         for record in all_records:
@@ -118,12 +116,12 @@ class MainController:
             if group not in groups_data:
                 groups_data[group] = []
             groups_data[group].append(record)
-        
+
         # Открываем диалог
         dialog = GroupsDialog(self.view)
         dialog.set_groups_data(groups_data)
         dialog.exec()
-    
+
     def save_xml(self):
         filepath, _ = QFileDialog.getSaveFileName(
             self.view, "Сохранить в XML", 

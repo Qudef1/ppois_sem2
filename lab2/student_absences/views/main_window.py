@@ -56,10 +56,6 @@ class MainWindow(QMainWindow):
         ops_menu.addSeparator()
         ops_menu.addAction("Группы и студенты...").triggered.connect(lambda: self.on_action("groups"))
 
-        # Меню Помощь
-        help_menu = menubar.addMenu("Помощь")
-        help_menu.addAction("О программе...").triggered.connect(lambda: self.on_action("about"))
-
     def create_toolbar(self):
         """Создание панели инструментов."""
         toolbar = QToolBar("Основная")

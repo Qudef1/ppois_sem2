@@ -24,6 +24,9 @@ class Database:
 
             conn.execute('CREATE INDEX IF NOT EXISTS idx_group ON students(group_number)')
             conn.execute('CREATE INDEX IF NOT EXISTS idx_name ON students(full_name)')
+            # обработка дубликатов.
+            conn.execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_student ON students(full_name, group_number)')
+            
             conn.commit()
 
     def create(self,record: StudentRecord) -> int:
@@ -105,15 +108,25 @@ class Database:
                     params.extend([criteria.min_absences, criteria.max_absences])
 
         if not conditions:
-            return self.get_all()
+            with self.get_connection() as conn:
+                cursor = conn.execute('SELECT COUNT(*) FROM students')
+                total = cursor.fetchone()[0]
+            return self.get_all(), total
 
         # Используем AND для пересечения условий (все условия должны выполняться)
         where_clause = ' AND '.join(conditions)
 
         with self.get_connection() as conn:
+            # Подсчёт общего числа
+            cursor = conn.execute(f'''
+                SELECT COUNT(*) FROM students WHERE {where_clause}
+            ''', params)
+            total = cursor.fetchone()[0]
+
+            # Получение записей
             cursor = conn.execute(f'''
                 SELECT id, full_name, group_number, absences_illness,
-                       absences_other, absences_unexcused
+                    absences_other, absences_unexcused
                 FROM students WHERE {where_clause}
                 ORDER BY id
             ''', params)
@@ -127,7 +140,7 @@ class Database:
                 absences_unexcused=row['absences_unexcused']
             ) for row in cursor.fetchall()]
 
-            return records
+            return records, total
 
     def delete_by_criteria(self, criteria: SearchCriteria) -> int:
         """
@@ -208,7 +221,4 @@ class Database:
                 absences_other=row['absences_other'],
                 absences_unexcused=row['absences_unexcused']
             ) for row in cursor.fetchall()]
-    
 
-
-            

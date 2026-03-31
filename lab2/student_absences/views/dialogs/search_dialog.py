@@ -1,5 +1,7 @@
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QSpinBox, QPushButton, QTabWidget, QWidget, QFormLayout, QComboBox, QTableWidget, QTableWidgetItem
 from models.criteria import SearchCriteria
+from ..widgets.pagination_window import PaginationWidget
+from models.config import PAGE_SIZE_DEFAULT
 
 class SearchDialog(QDialog):
     def __init__(self, parent=None):
@@ -8,6 +10,8 @@ class SearchDialog(QDialog):
         self.setModal(True)
         self.resize(900, 600)
         self.init_ui()
+        self.page_size = PAGE_SIZE_DEFAULT
+        self.lbl_result_count = QLabel("Найдено 0 записей")
 
     def init_ui(self):
         """Инициализация UI диалога."""
@@ -61,8 +65,7 @@ class SearchDialog(QDialog):
         layout.addWidget(self.tabs)
 
         # Кнопка поиска
-        self.btn_search = QPushButton("🔍 Найти")
-        self.btn_search.clicked.connect(self.on_search)
+        self.btn_search = QPushButton("Найти")
         layout.addWidget(self.btn_search)
 
         # Таблица результатов
@@ -73,33 +76,36 @@ class SearchDialog(QDialog):
             "Без уважит.", "Итого"
         ])
         self.results_table.horizontalHeader().setStretchLastSection(True)
+        
         self.results_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         layout.addWidget(self.results_table)
 
-        # Метка с количеством результатов
-        self.lbl_result_count = QLabel("")
-        self.lbl_result_count.setStyleSheet("font-weight: bold;")
-        layout.addWidget(self.lbl_result_count)
+        self.pagination = PaginationWidget()
+        self.pagination.page_changed.connect(self.on_page_changed)
+        self.pagination.page_size_changed.connect(self.on_page_size_changed)
+        layout.addWidget(self.pagination)
 
-        # Кнопка закрытия
         self.btn_close = QPushButton("Закрыть")
         self.btn_close.clicked.connect(self.accept)
         layout.addWidget(self.btn_close)
+    
+    def on_page_changed(self, page):
+        self.current_page = page
+        self._display_page()
 
-    def on_search(self):
-        """Обработчик кнопки поиска (вызывается контроллером)."""
-        pass  # Контроллер обработает через btn_search.clicked
+    def on_page_size_changed(self, size):
+        self.page_size = size
+        self.current_page = 1
+        self._display_page()
 
-    def set_search_results(self, records, total):
-        """
-        Установить результаты поиска.
+    def _display_page(self):
+        """Отобразить текущую страницу результатов."""
+        start = (self.current_page - 1) * self.page_size
+        end = start + self.page_size
+        page_records = self.search_results[start:end]
         
-        Args:
-            records: Список записей StudentRecord.
-            total: Общее количество найденных записей.
-        """
-        self.results_table.setRowCount(len(records))
-        for row, record in enumerate(records):
+        self.results_table.setRowCount(len(page_records))
+        for row, record in enumerate(page_records):
             self.results_table.setItem(row, 0, QTableWidgetItem(record.full_name))
             self.results_table.setItem(row, 1, QTableWidgetItem(record.group))
             self.results_table.setItem(row, 2, QTableWidgetItem(str(record.absences_illness)))
@@ -107,8 +113,25 @@ class SearchDialog(QDialog):
             self.results_table.setItem(row, 4, QTableWidgetItem(str(record.absences_unexcused)))
             self.results_table.setItem(row, 5, QTableWidgetItem(str(record.total_absences)))
         
-        # Обновляем метку с количеством результатов
-        self.lbl_result_count.setText(f"Найдено записей: {total}")
+        self.pagination.update_info(self.current_page, self.page_size, self.total_records)
+
+    def set_search_results(self, records, total):
+        """
+        Установить результаты поиска.
+
+        Args:
+            records: Список записей StudentRecord.
+            total: Общее количество найденных записей.
+        """
+        self.search_results = records
+        self.total_records = total
+        self.current_page = 1
+        self._display_page()
+
+
+    def on_search(self):
+        """Обработчик кнопки поиска (вызывается контроллером)."""
+        pass  # Контроллер обработает через btn_search.clicked
 
     def get_criteria(self) -> SearchCriteria:
         """

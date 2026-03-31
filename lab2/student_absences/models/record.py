@@ -16,7 +16,7 @@ class StudentRecord:
     def __post_init__(self):
         """Валидация после инициализации."""
         self.full_name = self.full_name.strip().title() if self.full_name else ""
-        self.group = self.group.strip().upper() if self.group else ""
+        self.group = self.group.strip() if self.group else ""
         
     @property
     def total_absences(self) -> int:
