@@ -1,11 +1,11 @@
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QMenuBar, QToolBar, QStatusBar
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QToolBar, QStatusBar
 from .widgets.pagination_window import PaginationWidget
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Учет пропусков студентов")
-        self.setGeometry(100, 100, 1200, 700)
+        self.setGeometry(100, 100, 1500, 700)
         self.init_ui()
 
     def init_ui(self):
@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
         ops_menu.addAction("Поиск записей...").triggered.connect(lambda: self.on_action("search"))
         ops_menu.addAction("Удалить записи...").triggered.connect(lambda: self.on_action("delete"))
         ops_menu.addSeparator()
-        ops_menu.addAction("Группы и студенты...").triggered.connect(lambda: self.on_action("groups"))
+        ops_menu.addAction("Дерево записей...").triggered.connect(lambda: self.on_action("tree_view"))
 
     def create_toolbar(self):
         """Создание панели инструментов."""
@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
         toolbar.addAction("Поиск").triggered.connect(lambda: self.on_action("search"))
         toolbar.addAction("Удалить").triggered.connect(lambda: self.on_action("delete"))
         toolbar.addSeparator()
-        toolbar.addAction("Группы").triggered.connect(lambda: self.on_action("groups"))
+        toolbar.addAction("Дерево").triggered.connect(lambda: self.on_action("tree_view"))
 
     def on_action(self, action_name):
         """
@@ -74,7 +74,7 @@ class MainWindow(QMainWindow):
         Args:
             action_name: Имя действия.
         """
-        pass  # Контроллер подключается через сигнал
+        pass
 
     def set_table_data(self, records):
         """

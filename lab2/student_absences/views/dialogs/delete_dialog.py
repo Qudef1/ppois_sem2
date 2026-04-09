@@ -19,7 +19,7 @@ class DeleteDialog(QDialog):
         layout = QVBoxLayout(self)
 
         # Предупреждение
-        warning = QLabel("⚠️ Внимание: удаление записей необратимо!")
+        warning = QLabel("Внимание: удаление записей необратимо!")
         warning.setStyleSheet("color: red; font-weight: bold; font-size: 13px;")
         layout.addWidget(warning)
 

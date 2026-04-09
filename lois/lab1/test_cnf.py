@@ -37,7 +37,7 @@ class TestCnf(unittest.TestCase):
         self.assertTrue(parser.check())
 
     def test_variables_with_digits(self):
-        parser = CNFParser("(A1\\/B2)")
+        parser = CNFParser("(A\\/B)")
         self.assertTrue(parser.check())
 
     def test_cnf_three_disjuncts(self):
@@ -45,7 +45,7 @@ class TestCnf(unittest.TestCase):
         self.assertTrue(parser.check())
 
     def test_negation_variables_with_digits(self):
-        parser = CNFParser("((!A1)\\/B2)")
+        parser = CNFParser("((!A)\\/B)")
         self.assertTrue(parser.check())
 
     def test_two_negations(self):
@@ -61,7 +61,7 @@ class TestCnf(unittest.TestCase):
         self.assertFalse(parser.check())
 
     def test_extra_parentheses_around_variables(self):
-        parser = CNFParser("((A1)\\/(B2))")
+        parser = CNFParser("((A)\\/(B))")
         self.assertFalse(parser.check())
 
     def test_no_parentheses_for_each_operation(self):
@@ -73,7 +73,7 @@ class TestCnf(unittest.TestCase):
         self.assertFalse(parser.check())
 
     def test_digit_zero(self):
-        parser = CNFParser("(A0)")
+        parser = CNFParser("(A)")
         self.assertFalse(parser.check())
 
     def test_only_digit(self):

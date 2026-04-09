@@ -1,17 +1,22 @@
 # Лабораторная работа №1 по дисциплине ЛОИС
 # Выполнена студентом группы 421702 БГУИР Сайковским Антоном Валерьевичем
-# Реализация парсера на Python для проверки является ли формула КНФ.
+# Реализация обработчика логической формулы на Python для проверки является ли формула КНФ.
 #
-# 20.03.2026 V1.0 
+# 31.03.2026 V1.1 (исправлены источники)
 # 
 # Источники:
-# https://en.wikipedia.org/wiki/Conjunctive_normal_form
 # Система для студентов на кафедре ИИТ
 #
+# Jackson P., Sheridan D. Clause Form Conversions for Boolean Circuits [Электронный ресурс]
+# University of Edinburgh, School of Informatics. – Режим доступа: https://homepages.inf.ed.ac.uk/pbj/papers/sat04-bc-conv.pdf
+# - Дата доступа: 02.04.2026.
+#
+# Колмогоров А.Н., Драгалин А.Г. Математическая логика. Введение в математическую логику. Ч. 1 
+# Учебное пособие по математической логике.
 
 class CNFParser:
     def __init__(self, formula: str):
-        self.formula = formula.replace(' ', '')
+        self.formula = formula
         self.pos = 0
         self.length = len(self.formula)
         self.error: str | None = None
@@ -47,12 +52,6 @@ class CNFParser:
             )
             return False
         self.consume()
-
-        while self.pos < self.length and self.peek().isdigit():
-            if self.peek() == '0':
-                self.error = "Некорректная"
-                return False
-            self.consume()
 
         return True
 

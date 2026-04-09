@@ -2,7 +2,7 @@
 # Выполнена студентом группы 421702 БГУИР Сайковским Антоном Валерьевичем
 # CLI для проверки формул на КНФ и запуска тестов
 #
-# 31.03.2026 V1.0 
+# 31.03.2026 V1.1 (Добавлена обработка пробелов)
 # 
 
 from CnfChecker import CNFParser
@@ -40,18 +40,21 @@ def check_formula(formula):
 
 def main():
     print_help()
-    
+
     while True:
         try:
-            formula = input("\nВведите формулу (или 'help', 'exit', 'test'): ").strip()
-            
+            formula_raw = input("\nВведите формулу (или 'help', 'exit', 'test'): ")
+            formula = formula_raw.strip()
+
             if not formula:
                 print("Введите формулу!")
                 continue
-            
-            if len(formula) != len(formula.replace(' ','')):
-                print('')
 
+            # Проверка на пробелы внутри формулы и в начале и в конце
+            if len(formula) != len(formula.replace(' ', '')) or formula_raw != formula:
+                print('Некорректный вид формулы: слишком много пробелов.')
+                continue
+                
             if formula.lower() in ['exit', 'quit', 'выход']:
                 print("\nДо свидания!")
                 break
@@ -73,7 +76,6 @@ def main():
             break
         except Exception as e:
             print(f"\nОшибка: {e}\n")
-
 
 if __name__ == "__main__":
     main()

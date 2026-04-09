@@ -29,12 +29,20 @@ class Database:
             
             conn.commit()
 
-    def create(self,record: StudentRecord) -> int:
+    def create(self, record: StudentRecord) -> int:
         with self.get_connection() as conn:
-            cursor = conn.execute(INSERT_FULL,(record.full_name,record.group,
-                                          record.absences_illness,record.absences_other,record.absences_unexcused))
-            conn.commit()
-            return cursor.lastrowid
+            try:
+                cursor = conn.execute(INSERT_FULL, (
+                    record.full_name, record.group,
+                    record.absences_illness, record.absences_other,
+                    record.absences_unexcused
+                ))
+                conn.commit()
+                return cursor.lastrowid
+            except sqlite3.IntegrityError:
+                raise ValueError(
+                    f"Студент «{record.full_name}» ({record.group}) уже существует"
+                )
         
     def get_all_paged(self,page:int,page_size: int) -> Tuple[List[StudentRecord], int]:
         offset = (page - 1) * page_size
@@ -196,8 +204,8 @@ class Database:
         if not conditions:
             return 0
 
-        # Используем OR для удаления (любое условие подходит)
-        where_clause = " OR ".join(conditions)
+        
+        where_clause = " AND ".join(conditions)
 
         with self.get_connection() as conn:
             cursor = conn.execute(f'DELETE FROM students WHERE {where_clause}', params)

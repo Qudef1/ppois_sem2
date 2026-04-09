@@ -3,7 +3,7 @@ from views.main_window import MainWindow
 from views.dialogs.input_dialog import InputDialog
 from views.dialogs.search_dialog import SearchDialog
 from views.dialogs.delete_dialog import DeleteDialog
-from views.dialogs.groups_dialog import GroupsDialog
+from views.dialogs.tree_view_dialog import TreeViewDialog
 from models.database import Database
 from models.xml_handler import XMLWriter, XMLReader
 from models.config import *
@@ -38,8 +38,8 @@ class MainController:
             self.search_records()
         elif action_name == "delete":
             self.delete_records()
-        elif action_name == "groups":
-            self.show_groups()
+        elif action_name == "tree_view":
+            self.show_tree_view()
         elif action_name == "load_xml":
             self.load_xml()
         elif action_name == "save_xml":
@@ -66,9 +66,12 @@ class MainController:
         dialog = InputDialog(self.view)
         if dialog.exec() == 1:
             record = dialog.get_record()
-            self.db.create(record)
-            self.load_data()
-            QMessageBox.information(self.view, "Успех", "Запись добавлена!")
+            try:
+                self.db.create(record)
+                self.load_data()
+                QMessageBox.information(self.view, "Успех", "Запись добавлена!")
+            except ValueError as e:
+                QMessageBox.warning(self.view, "Дубликат", str(e))
     
     def search_records(self):
         """Открыть диалог поиска записей."""
@@ -104,12 +107,9 @@ class MainController:
             else:
                 QMessageBox.warning(dialog, "Предупреждение", "Заполните хотя бы одно условие удаления")
 
-    def show_groups(self):
-        """Открыть диалог просмотра групп и студентов."""
-        # Получаем все записи
+    def show_tree_view(self):
+        """Открыть окно просмотра дерева записей."""
         all_records = self.db.get_all()
-
-        # Группируем по номеру группы
         groups_data = {}
         for record in all_records:
             group = record.group
@@ -117,10 +117,9 @@ class MainController:
                 groups_data[group] = []
             groups_data[group].append(record)
 
-        # Открываем диалог
-        dialog = GroupsDialog(self.view)
+        dialog = TreeViewDialog(self.view)
         dialog.set_groups_data(groups_data)
-        dialog.exec()
+        dialog.show()
 
     def save_xml(self):
         filepath, _ = QFileDialog.getSaveFileName(

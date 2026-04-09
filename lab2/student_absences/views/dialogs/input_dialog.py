@@ -49,8 +49,8 @@ class InputDialog(QDialog):
         self.spin_unexcused.valueChanged.connect(self.update_total)
         
         btn_layout = QHBoxLayout()
-        self.btn_save = QPushButton("💾 Сохранить")
-        self.btn_cancel = QPushButton("❌ Отмена")
+        self.btn_save = QPushButton("Сохранить")
+        self.btn_cancel = QPushButton("Отмена")
         
         self.btn_save.clicked.connect(self.on_save)
         self.btn_cancel.clicked.connect(self.reject)

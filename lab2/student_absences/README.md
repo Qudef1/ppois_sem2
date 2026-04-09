@@ -1,245 +1,203 @@
-# Учет пропусков студентов — Полная документация
+# Учёт пропусков студентов
 
-**MVC-приложение** для учёта пропусков занятий студентами.
+**MVC-приложение** на PyQt6 для учёта, поиска и анализа пропусков студентов.
+Поддержка SQLite, XML (SAX-чтение / DOM-запись), пагинации и двух режимов
+отображения данных — таблица и дерево.
 
+---
 
-
-## 📁 Структура проекта (MVC)
+## 📁 Структура проекта
 
 ```
 lab2/student_absences/
-├── main.py                     # ТОЧКА ВХОДА
+├── main.py                          # Точка входа
+├── README.md                        # Документация
+├── requirements.txt                 # Зависимости
 │
-├── controllers/                # CONTROLLER (MVC)
-│   └── main_controller.py      # MainController — связывает Model и View
+├── controllers/                     # CONTROLLER
+│   ├── __init__.py
+│   └── main_controller.py           # MainController — связывает Model и View
 │
-├── models/                     # MODEL (MVC)
-│   ├── config.py               # Константы и настройки
-│   ├── record.py               # StudentRecord — модель данных
-│   ├── criteria.py             # SearchCriteria — критерии поиска
-│   ├── database.py             # Database — работа с SQLite
-│   ├── xml_handler.py          # XMLWriter (DOM), XMLReader (SAX)
-│   └── generate_data.py        # Генератор тестовых данных
+├── models/                          # MODEL
+│   ├── __init__.py
+│   ├── config.py                    # Константы, SQL-запросы, пути
+│   ├── record.py                    # StudentRecord — модель данных
+│   ├── criteria.py                  # SearchCriteria — критерии поиска/удаления
+│   ├── database.py                  # Database — работа с SQLite3
+│   └── xml_handler.py               # XMLWriter (DOM), XMLReader (SAX)
 │
-├── views/                      # VIEW (MVC)
-│   ├── main_window.py          # MainWindow — главное окно
-│   └── dialogs/
-│       ├── input_dialog.py     # InputDialog — ввод/редактирование
-│       ├── search_dialog.py    # SearchDialog — поиск
-│       └── delete_dialog.py    # DeleteDialog — удаление
-│
-├── widgets/                    # Виджеты
-│   └── pagination_window.py    # PaginationWidget — пагинация
+├── views/                           # VIEW
+│   ├── __init__.py
+│   ├── main_window.py               # MainWindow — главное окно с таблицей
+│   ├── dialogs/
+│   │   ├── __init__.py              # Реэкспорт всех диалогов
+│   │   ├── input_dialog.py          # Ввод / редактирование записи
+│   │   ├── search_dialog.py         # Поиск (3 вкладки) + пагинация
+│   │   ├── delete_dialog.py         # Удаление по критериям (3 вкладки)
+│   │   ├── groups_dialog.py         # Просмотр групп и студентов
+│   │   └── tree_view_dialog.py      # Отображение в виде дерева
+│   └── widgets/
+│       ├── __init__.py              # Реэкспорт PaginationWidget
+│       └── pagination_window.py     # Виджет пагинации
 │
 └── resources/
     └── data/
-        ├── students.db         # SQLite база данных
-        └── students.xml        # XML файл
+        ├── students.db              # SQLite база данных
+        └── students.xml             # XML файл
 ```
 
 ---
 
 ## 🏗 Архитектура MVC
 
-### Где что находится:
-
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│ VIEW (Представление) — папка views/                             │
-│ ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
-│ │ MainWindow   │  │ InputDialog  │  │ SearchDialog         │   │
-│ │ main_window. │  │ input_dialog.│  │ search_dialog.py     │   │
-│ │ py           │  │ py           │  │                      │   │
-│ └──────────────┘  └──────────────┘  └──────────────────────┘   │
-│ ┌──────────────┐  ┌──────────────┐                             │
-│ │ DeleteDialog │  │ Pagination   │                             │
-│ │ delete_dialog│  │ pagination_  │                             │
-│ │ .py          │  │ window.py    │                             │
-│ └──────────────┘  └──────────────┘                             │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-              Сигналы PyQt6 (pyqtSignal, slots)
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│ CONTROLLER (Контроллер) — controllers/                          │
-│ ┌─────────────────────────────────────────────────────────────┐ │
-│ │ main_controller.py — MainController                          │ │
-│ │ • on_menu_action() — обработка меню                          │ │
-│ │ • load_data() — загрузка данных                              │ │
-│ │ • add_record() — добавление                                  │ │
-│ │ • search_records() — поиск                                   │ │
-│ │ • delete_records() — удаление                                │ │
-│ │ • save_xml() / load_xml() — XML                              │ │
-│ └─────────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│ MODEL (Модель) — models/                                        │
-│ ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
-│ │ StudentRecord│  │ Database     │  │ XML Handler          │   │
-│ │ record.py    │  │ database.py  │  │ xml_handler.py       │   │
-│ └──────────────┘  └──────────────┘  └──────────────────────┘   │
-│ ┌──────────────┐  ┌──────────────┐                             │
-│ │ SearchCriteria│ │ Config       │                             │
-│ │ criteria.py  │ │ config.py    │                             │
-│ └──────────────┘  └──────────────┘                             │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────┐
+│ VIEW (Представление) — views/                    │
+│  MainWindow  InputDialog  SearchDialog           │
+│  DeleteDialog  GroupsDialog  TreeViewDialog       │
+│  PaginationWidget                                 │
+└──────────────────────┬──────────────────────────┘
+                       │ Сигналы PyQt6
+                       ▼
+┌─────────────────────────────────────────────────┐
+│ CONTROLLER — controllers/main_controller.py      │
+│  on_menu_action()  load_data()  add_record()     │
+│  search_records()  delete_records()  show_tree() │
+│  save_xml()  load_xml()                          │
+└──────────────────────┬──────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────┐
+│ MODEL — models/                                  │
+│  StudentRecord  Database  SearchCriteria         │
+│  XMLWriter / XMLReader  config                   │
+└─────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🔄 Полный pipeline работы программы
+## 🚀 Запуск
 
-### 1. Запуск приложения
-
-```
-main.py
-  ↓
-MainController.__init__()
-  ├─ QApplication([])
-  ├─ Database() → init_db() → CREATE TABLE
-  ├─ MainWindow()
-  └─ connect_signals()
-  ↓
-MainController.load_data()
-  ├─ Database.get_all_paged(page=1, page_size=10)
-  │   └─ SELECT ... LIMIT 10 OFFSET 0
-  └─ MainWindow.set_table_data(records)
-  ↓
-MainController.run()
-  ├─ MainWindow.show()
-  └─ app.exec() → главный цикл событий
+```bash
+cd lab2/student_absences
+python main.py
 ```
 
-### 2. Добавление записи
+---
 
-```
-Пользователь: Меню "Операции" → "Добавить запись"
-  ↓
-MainController.on_menu_action("add")
-  ↓
-MainController.add_record()
-  ├─ InputDialog(self.view)
-  ├─ dialog.exec() → пользователь вводит данные
-  ├─ InputDialog.on_save()
-  │   └─ StudentRecord.validate()
-  ├─ dialog.get_record() → StudentRecord
-  ├─ Database.create(record)
-  │   └─ INSERT INTO students (full_name, group_number, ...) VALUES (?, ?, ...)
-  ├─ MainController.load_data() → обновление таблицы
-  └─ QMessageBox.information("Запись добавлена!")
-```
+## 📋 Функциональность
 
-### 3. Поиск записей
+### Главное окно
 
-```
-Пользователь: Меню "Операции" → "Поиск записей"
-  ↓
-MainController.on_menu_action("search")
-  ↓
-MainController.search_records()
-  ├─ SearchDialog(self.view)
-  ├─ dialog.btn_search.clicked.connect(perform_search)
-  ├─ dialog.exec() → пользователь вводит условия
-  │
-  Пользователь нажимает "🔍 Найти"
-  ↓
-SearchDialog.on_search() (пустой)
-  ↓
-Контроллер (через сигнал btn_search.clicked):
-  ↓
-MainController.perform_search(dialog)
-  ├─ dialog.get_criteria() → SearchCriteria
-  ├─ criteria.is_valid() → проверка
-  ├─ Database.search_paged(criteria, page=1, page_size=10)
-  │   ├─ WHERE group_number = ? OR full_name LIKE ? OR ...
-  │   └─ SELECT ... LIMIT 10 OFFSET 0
-  ├─ dialog.set_search_results(records, total)
-  │   └─ заполняет QTableWidget в диалоге
-  └─ dialog.pagination.update_info(1, page_size, total)
-```
+| Элемент | Описание |
+|---|---|
+| Таблица (6 колонок) | ФИО, Группа, По болезни, По др. причинам, Без уважит., Итого |
+| Пагинация | Навигация ← →, выбор размера страницы (5–100) |
+| Меню «Файл» | Загрузить XML, Сохранить XML, Выход |
+| Меню «Операции» | Добавить, Поиск, Удалить, Группы, Дерево записей |
+| Панель инструментов | Быстрые кнопки: Добавить, Поиск, Удалить, Группы, Дерево |
 
-### 4. Удаление записей
+### Операции
 
-```
-Пользователь: Меню "Операции" → "Удалить записи"
-  ↓
-MainController.on_menu_action("delete")
-  ↓
-MainController.delete_records()
-  ├─ DeleteDialog(self.view)
-  ├─ dialog.exec() → пользователь вводит условия
-  ├─ dialog.get_criteria() → SearchCriteria
-  ├─ criteria.is_valid() → проверка
-  ├─ Database.delete_by_criteria(criteria)
-  │   └─ DELETE FROM students WHERE group_number = ? OR full_name LIKE ?
-  ├─ dialog.show_result(count) → QMessageBox
-  └─ MainController.load_data() → обновление таблицы
-```
+#### Добавить запись
+- Диалог с полями: ФИО, Группа, 3 счётчика пропусков
+- Валидация: ФИО ≥ 2 слова, Группа ≥ 4 символа, пропуски 0–999
+- Автоформатирование: ФИО → title case, Группа → strip
+- Проверка дубликатов по `(full_name, group_number)`
 
-### 5. Сохранение в XML (DOM)
+#### Поиск записей
+3 вкладки:
+1. **Группа или фамилия** — точное совпадение группы / начало фамилии
+2. **Пропуски и вид** — минимум пропусков по выбранному типу
+3. **Фамилия + диапазон** — фамилия + интервал по конкретному виду
 
+Результаты отображаются с **собственной пагинацией** внутри диалога.
+
+#### Удаление записей
+Аналогично поиску (3 вкладки), логика — **AND** между условиями.
+
+#### Дерево записей (немодальное окно)
+Отображение данных в котором каждая запись является листовым элементом.
+
+#### XML
+- **Экспорт** — DOM (`xml.dom.minidom`): `<students>` → `<student id="N">` → `<field type="...">`
+- **Импорт** — SAX (`xml.sax`): парсинг → `clear_all()` → `create()` для каждой записи
+
+---
+
+## 🗃 Модель данных
+
+### StudentRecord
+
+| Поле | Тип | Описание |
+|---|---|---|
+| `id` | `int` | Первичный ключ (0 для новых) |
+| `full_name` | `str` | ФИО (автоformat: `.strip().title()`) |
+| `group` | `str` | Номер группы (автоformat: `.strip()`) |
+| `absences_illness` | `int` | Пропуски по болезни |
+| `absences_other` | `int` | Пропуски по другим причинам |
+| `absences_unexcused` | `int` | Пропуски без уважительной причины |
+
+**Свойства:**
+- `total_absences` — сумма всех пропусков
+- `surname` — первое слово из ФИО
+
+**Валидация:** `validate() → (bool, str | None)`
+
+### Уникальность
+
+Уникальный индекс SQLite на `(full_name, group_number)`.
+При попытке добавить дубликат `Database.create()` бросает `ValueError`,
+контроллер выводит `QMessageBox.warning`.
+
+---
+
+## 🔄 Основные потоки данных
+
+### Добавление записи
 ```
-Пользователь: Меню "Файл" → "Сохранить в XML..."
-  ↓
-MainController.on_menu_action("save_xml")
-  ↓
-MainController.save_xml()
-  ├─ QFileDialog.getSaveFileName() → filepath
-  ├─ Database.get_all() → [StudentRecord, ...]
-  ├─ XMLWriter.write(records, filepath)
-  │   ├─ minidom.Document()
-  │   ├─ createElement('students')
-  │   ├─ для каждой записи:
-  │   │   ├─ createElement('student', id="1")
-  │   │   └─ для каждого поля:
-  │   │       ├─ createElement('field', name="full_name")
-  │   │       └─ appendChild(textNode)
-  │   └─ writexml(filepath)
-  └─ QMessageBox.information("Данные сохранены")
+Меню «Добавить» → InputDialog → validate()
+  → Database.create() → load_data() → обновление таблицы
 ```
 
-### 6. Загрузка из XML (SAX)
-
+### Поиск
 ```
-Пользователь: Меню "Файл" → "Загрузить из XML..."
-  ↓
-MainController.on_menu_action("load_xml")
-  ↓
-MainController.load_xml()
-  ├─ QFileDialog.getOpenFileName() → filepath
-  ├─ XMLReader.read(filepath)
-  │   ├─ xml.sax.make_parser()
-  │   ├─ setContentHandler(XMLReader())
-  │   ├─ parser.parse(filepath)
-  │   │   ├─ startElement('student') → current_record = {'id': 1}
-  │   │   ├─ characters(...) → current_data += ...
-  │   │   └─ endElement('student') → StudentRecord.from_dict()
-  │   └─ return [StudentRecord, ...]
-  ├─ Database.clear_all() → DELETE FROM students
-  ├─ для каждой записи: Database.create(record)
-  ├─ MainController.load_data() → обновление таблицы
-  └─ QMessageBox.information("Загружено N записей")
+Меню «Поиск» → SearchDialog → get_criteria()
+  → Database.search() → set_search_results() → пагинация в диалоге
 ```
 
-### 7. Пагинация
-
+### Пагинация (главное окно)
 ```
-Пользователь нажимает "След. ▶"
-  ↓
-PaginationWidget.btn_next.clicked
-  ↓
-PaginationWidget.next_page()
-  ├─ current_page += 1
-  ├─ update_info() → обновляет метки
-  └─ испускает сигнал page_changed(2)
-  ↓
-MainController.on_page_changed(2)
-  ├─ current_page = 2
-  └─ load_data()
-      ├─ Database.get_all_paged(page=2, page_size=10)
-      │   └─ SELECT ... LIMIT 10 OFFSET 10
-      └─ MainWindow.set_table_data(records)
+Кнопка «След.» → page_changed(page)
+  → Controller.on_page_changed() → db.get_all_paged()
+  → MainWindow.set_table_data()
 ```
 
+### Экспорт XML
+```
+Меню «Сохранить XML» → QFileDialog → db.get_all()
+  → XMLWriter.write() → QMessageBox
+```
+
+---
+
+## ⚙️ Конфигурация
+
+Файл `models/config.py`:
+
+| Константа | Значение |
+|---|---|
+| `PAGE_SIZE_DEFAULT` | `10` |
+| `DATABASE_PATH` | `resources/data/students.db` |
+| `XML_DEFAULT_PATH` | `resources/data/students.xml` |
+
+---
+
+
+## ⚠️ Известные проблемы
+
+| Проблема | Файл | Описание |
+|---|---|---|
+| Ошибка в `groups_dialog.py` | `_display_students()` | Запись в колонку с индексом 5 при `setColumnCount(5)` (индексы 0–4) |
+| `requirements.txt` | — | Указан `PyQt5`, код использует `PyQt6`; `pydantic` не используется |
+| Отсутствуют тесты | — | Нет покрытия тестами |
