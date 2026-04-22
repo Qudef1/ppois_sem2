@@ -85,7 +85,7 @@ def make_test():
     random_tasks = cursor.fetchall()
     score = 0
     for task in random_tasks:
-        print(f"Является ли формула {task[0]} КНФ?\n")
+        print(f"Является ли формула \"{task[0]}\" КНФ?\n")
         if int(input("Введите 0, если не является, 1, если является.\n")) == task[1]:
             score += 1
     return round(score/7 * 10, 2)
