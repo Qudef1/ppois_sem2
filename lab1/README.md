@@ -24,6 +24,13 @@
 ## Структура проекта
 ```
 lab1/
+├── backend/
+│   ├── app/
+│   │   ├── main.py          # FastAPI роуты
+│   │   ├── theater_service.py # Application service (общая модель + use-cases)
+│   │   ├── templates/       # HTML шаблоны
+│   │   └── static/          # CSS/JS
+│   └── README.md            # Документация web-интерфейса
 ├── src/
 │   ├── theater.py       # Класс Theater
 │   ├── actions.py       # Setting, Repetition
@@ -52,6 +59,17 @@ python3 main_menu.py
 cd lab1
 python3 -m unittest discover tests -v
 ```
+
+## Web-интерфейс (л/р №4)
+```bash
+cd lab1/backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+Подробнее: `lab1/backend/README.md`
 
 ## Сериализация
 - Все классы имеют методы `to_dict()` и `from_dict()`

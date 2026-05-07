@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Театр — Web интерфейс</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+<main class="container">
+    <header>
+        <h1>Театр: {{ name }}</h1>
+        <p>Web-интерфейс для модели из лабораторной №1</p>
+    </header>
+
+    {% if message %}
+    <section class="message {% if is_error %}error{% else %}success{% endif %}">
+        {{ message }}
+    </section>
+    {% endif %}
+
+    <section class="grid two">
+        <article class="card">
+            <h2>Общая сводка</h2>
+            <ul>
+                <li>Актеров: {{ actors|length }}</li>
+                <li>Режиссеров: {{ directors|length }}</li>
+                <li>Залов: {{ halls|length }}</li>
+                <li>Постановок: {{ settings|length }}</li>
+                <li>Репетиций: {{ repetitions|length }}</li>
+                <li>Костюмов: {{ costumes|length }}</li>
+                <li>Билетов всего: {{ tickets|length }}</li>
+                <li>Продано: {{ sold_tickets|length }}</li>
+                <li>В продаже: {{ available_tickets|length }}</li>
+            </ul>
+        </article>
+        <article class="card">
+            <h2>Название театра</h2>
+            <form method="post" action="/theater/rename">
+                <input type="text" name="new_name" placeholder="Новое название" required>
+                <button type="submit">Изменить</button>
+            </form>
+        </article>
+    </section>
+
+    <section class="grid three">
+        <article class="card">
+            <h3>Добавить зал</h3>
+            <form method="post" action="/halls">
+                <input name="name" placeholder="Название" required>
+                <input name="hall_id" placeholder="ID зала" required>
+                <input type="number" name="sectors" min="1" placeholder="Секторы" required>
+                <input type="number" name="rows_per_sector" min="1" placeholder="Рядов в секторе" required>
+                <input type="number" name="seats_per_row" min="1" placeholder="Мест в ряду" required>
+                <button type="submit">Добавить</button>
+            </form>
+        </article>
+        <article class="card">
+            <h3>Добавить актера</h3>
+            <form method="post" action="/staff/actors">
+                <input name="name" placeholder="Имя" required>
+                <input type="number" name="age" min="18" placeholder="Возраст" required>
+                <input type="number" step="0.01" name="salary" min="0" placeholder="Зарплата" required>
+                <input name="role" placeholder="Роль">
+                <button type="submit">Добавить</button>
+            </form>
+        </article>
+        <article class="card">
+            <h3>Добавить режиссера</h3>
+            <form method="post" action="/staff/directors">
+                <input name="name" placeholder="Имя" required>
+                <input type="number" name="age" min="25" placeholder="Возраст" required>
+                <input type="number" step="0.01" name="salary" min="0" placeholder="Зарплата" required>
+                <button type="submit">Добавить</button>
+            </form>
+        </article>
+    </section>
+
+    <section class="grid three">
+        <article class="card">
+            <h3>Добавить постановку</h3>
+            <form method="post" action="/settings">
+                <input name="name" placeholder="Название" required>
+                <input type="number" name="durability" min="0.1" step="0.1" placeholder="Длительность (ч)" required>
+                <input type="date" name="date" required>
+                <select name="director_name" required>
+                    <option value="">Режиссер</option>
+                    {% for d in directors %}
+                    <option value="{{ d.name }}">{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Добавить</button>
+            </form>
+        </article>
+        <article class="card">
+            <h3>Создать костюм</h3>
+            <form method="post" action="/costumes">
+                <input name="name" placeholder="Название" required>
+                <input name="size" placeholder="Размер S/M/L/XL" required>
+                <input name="color" placeholder="Цвет" required>
+                <button type="submit">Создать</button>
+            </form>
+        </article>
+        <article class="card">
+            <h3>Привязать постановку к залу</h3>
+            <form method="post" action="/settings/bind">
+                <select name="setting_name" required>
+                    <option value="">Постановка</option>
+                    {% for s in settings %}
+                    <option value="{{ s.name }}">{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+                <select name="hall_id" required>
+                    <option value="">Зал</option>
+                    {% for h in halls %}
+                    <option value="{{ h.hall_id }}">{{ h.name }} ({{ h.hall_id }})</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="base_price" min="1" step="1" placeholder="Базовая цена" required>
+                <button type="submit">Привязать</button>
+            </form>
+        </article>
+    </section>
+
+    <section class="grid three">
+        <article class="card">
+            <h3>Добавить актера в постановку</h3>
+            <form method="post" action="/settings/cast">
+                <select name="actor_name" required>
+                    <option value="">Актер</option>
+                    {% for a in actors %}
+                    <option value="{{ a.name }}">{{ a.name }}</option>
+                    {% endfor %}
+                </select>
+                <select name="setting_name" required>
+                    <option value="">Постановка</option>
+                    {% for s in settings %}
+                    <option value="{{ s.name }}">{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Добавить</button>
+            </form>
+        </article>
+        <article class="card">
+            <h3>Назначить костюм актеру</h3>
+            <form method="post" action="/costumes/assign">
+                <select name="actor_name" required>
+                    <option value="">Актер</option>
+                    {% for a in actors %}
+                    <option value="{{ a.name }}">{{ a.name }}</option>
+                    {% endfor %}
+                </select>
+                <select name="costume_name" required>
+                    <option value="">Костюм</option>
+                    {% for c in costumes %}
+                    <option value="{{ c.name }}">{{ c.name }} ({{ c.size }}, {{ c.color }})</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Назначить</button>
+            </form>
+        </article>
+        <article class="card">
+            <h3>Добавить репетицию</h3>
+            <form method="post" action="/repetitions">
+                <select name="setting_name" required>
+                    <option value="">Постановка</option>
+                    {% for s in settings %}
+                    <option value="{{ s.name }}">{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="date" name="date" required>
+                <input type="number" name="durability" min="0.1" step="0.1" placeholder="Длительность" required>
+                <button type="submit">Добавить</button>
+            </form>
+        </article>
+    </section>
+
+    <section class="grid two">
+        <article class="card">
+            <h3>Отметить актеров на репетиции</h3>
+            <form method="post" action="/repetitions/mark">
+                <select name="repetition_name" required>
+                    <option value="">Репетиция</option>
+                    {% for r in repetitions %}
+                    <option value="{{ r.name }}">{{ r.name }}</option>
+                    {% endfor %}
+                </select>
+                <label>Актеры (можно несколько):</label>
+                <select name="actor_names" multiple size="5">
+                    {% for a in actors %}
+                    <option value="{{ a.name }}">{{ a.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Отметить</button>
+            </form>
+        </article>
+        <article class="card">
+            <h3>Продажа билета</h3>
+            <form method="post" action="/tickets/sell">
+                <select name="ticket_id" required>
+                    <option value="">Доступный билет</option>
+                    {% for t in available_tickets %}
+                    <option value="{{ t.ticket_id }}">
+                        #{{ t.ticket_id }} | {{ t.setting.name if t.setting else "-" }} | сектор {{ t.sector }},
+                        ряд {{ t.row }}, место {{ t.seat }} | {{ "%.0f"|format(t.price) }} руб.
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Продать</button>
+            </form>
+        </article>
+    </section>
+
+    <section class="grid two">
+        <article class="card">
+            <h3>Сохранить состояние</h3>
+            <form method="post" action="/state/save">
+                <input name="path" placeholder="Например: data/theater.json" required>
+                <button type="submit">Сохранить</button>
+            </form>
+        </article>
+        <article class="card">
+            <h3>Загрузить состояние</h3>
+            <form method="post" action="/state/load">
+                <input name="path" placeholder="Путь до JSON" required>
+                <button type="submit">Загрузить</button>
+            </form>
+        </article>
+    </section>
+
+    <h2>Информация о театре (как в CLI)</h2>
+    <section class="grid three">
+        <article class="card">
+            <h3>1. Общая сводка</h3>
+            <ul>
+                <li>Название театра: {{ name }}</li>
+                <li>Сотрудников: {{ actors|length + directors|length }}</li>
+                <li>Залов: {{ halls|length }}</li>
+                <li>Постановок: {{ settings|length }}</li>
+                <li>Репетиций: {{ repetitions|length }}</li>
+                <li>Билетов: {{ tickets|length }} (продано: {{ sold_tickets|length }})</li>
+                <li>Костюмов: {{ costumes|length }}</li>
+            </ul>
+        </article>
+
+        <article class="card">
+            <h3>2. Сотрудники</h3>
+            <p><strong>Актеры:</strong></p>
+            <ul>
+                {% for actor in actors %}
+                <li>{{ actor.name }}{% if actor.role %} ({{ actor.role }}){% endif %}</li>
+                {% else %}
+                <li>Нет актеров</li>
+                {% endfor %}
+            </ul>
+            <p><strong>Режиссеры:</strong></p>
+            <ul>
+                {% for director in directors %}
+                <li>{{ director.name }}</li>
+                {% else %}
+                <li>Нет режиссеров</li>
+                {% endfor %}
+            </ul>
+        </article>
+
+        <article class="card">
+            <h3>3. Залы</h3>
+            <ul>
+                {% for hall in halls %}
+                <li>
+                    {{ hall.name }} (ID: {{ hall.hall_id }}) —
+                    вместимость: {{ hall.capacity }}
+                </li>
+                {% else %}
+                <li>Нет залов</li>
+                {% endfor %}
+            </ul>
+        </article>
+    </section>
+
+    <section class="grid three">
+        <article class="card">
+            <h3>4. Постановки</h3>
+            <ul>
+                {% for setting in settings %}
+                <li>
+                    {{ setting.name }} —
+                    {{ setting.date.strftime("%Y-%m-%d") if setting.date else "-" }},
+                    режиссер: {{ setting.director.name if setting.director else "Н/Д" }},
+                    актеров: {{ setting.cast|length }}
+                </li>
+                {% else %}
+                <li>Нет постановок</li>
+                {% endfor %}
+            </ul>
+            <p><strong>Репетиции:</strong></p>
+            <ul>
+                {% for repetition in repetitions %}
+                <li>{{ repetition.name }} — отмечено: {{ repetition.attendance_list|length }}</li>
+                {% else %}
+                <li>Нет репетиций</li>
+                {% endfor %}
+            </ul>
+        </article>
+
+        <article class="card">
+            <h3>5. Билеты</h3>
+            <ul>
+                <li>Всего: {{ tickets|length }}</li>
+                <li>Продано: {{ sold_tickets|length }}</li>
+                <li>В продаже: {{ available_tickets|length }}</li>
+                <li>Выручка: {{ "%.0f"|format(sold_tickets|sum(attribute="price")) }} руб.</li>
+            </ul>
+        </article>
+
+        <article class="card">
+            <h3>6. Ресурсы</h3>
+            <p><strong>Сцены:</strong></p>
+            <ul>
+                {% for stage in theater.resource_manager.stages %}
+                <li>{{ stage.name }} ({{ stage.capacity }} мест)</li>
+                {% else %}
+                <li>Нет сцен</li>
+                {% endfor %}
+            </ul>
+            <p><strong>Костюмерные:</strong></p>
+            <ul>
+                {% for room in theater.resource_manager.costume_rooms %}
+                <li>{{ room.name }} (костюмов: {{ room.costume_ids|length }})</li>
+                {% else %}
+                <li>Нет костюмерных</li>
+                {% endfor %}
+            </ul>
+        </article>
+    </section>
+
+    <section class="card">
+        <h3>Билеты</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Постановка</th>
+                    <th>Зал</th>
+                    <th>Сектор</th>
+                    <th>Ряд</th>
+                    <th>Место</th>
+                    <th>Цена</th>
+                    <th>Статус</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for t in tickets %}
+                <tr>
+                    <td>{{ t.ticket_id }}</td>
+                    <td>{{ t.setting.name if t.setting else "-" }}</td>
+                    <td>{{ t.hall_id }}</td>
+                    <td>{{ t.sector }}</td>
+                    <td>{{ t.row }}</td>
+                    <td>{{ t.seat }}</td>
+                    <td>{{ "%.0f"|format(t.price) }}</td>
+                    <td>{{ "Продан" if t.is_sold else "В продаже" }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
