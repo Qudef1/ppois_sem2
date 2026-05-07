@@ -1,5 +1,5 @@
 from app.container import container
-from app.theater_service import TheaterService
+from app.services.theater import TheaterService
 
 
 def get_theater_service() -> TheaterService:

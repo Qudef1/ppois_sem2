@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ hall_view.setting_name }} — выбор мест</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header-row">
+        <div>
+            <h1>{{ hall_view.setting_name }}</h1>
+            <p>Дата: {{ hall_view.date[:10] }} | Режиссер: {{ hall_view.director }}</p>
+            <p>Зал: {{ hall_view.hall_id }} | Доступно: {{ hall_view.available_count }} / {{ hall_view.capacity }}</p>
+        </div>
+        <a class="btn-link" href="/tickets">К афише</a>
+    </header>
+
+    {% if message %}
+    <section class="message {% if is_error %}error{% else %}success{% endif %}">
+        {{ message }}
+    </section>
+    {% endif %}
+
+    <section class="card">
+        <form method="get" action="/tickets/setting/{{ hall_view.setting_idx }}" class="inline-form">
+            <label for="hall_id"><strong>Выбор зала:</strong></label>
+            <select id="hall_id" name="hall_id">
+                {% for hid in hall_view.halls %}
+                <option value="{{ hid }}" {% if hid == hall_view.hall_id %}selected{% endif %}>{{ hid }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Показать места</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <h3>Схема зала</h3>
+        <div class="legend">
+            <span><i class="seat seat-available"></i> Свободно</span>
+            <span><i class="seat seat-sold"></i> Продано</span>
+            <span><i class="seat seat-gap"></i> Нет места</span>
+        </div>
+
+        <div class="hall-sectors">
+            {% for sector in hall_view.sectors %}
+            <div class="sector">
+                <h4>Сектор {{ sector.sector_label }}</h4>
+                {% for row in sector.rows %}
+                <div class="seat-row">
+                    <span class="row-label">Ряд {{ row.row_label }}</span>
+                    <div class="seats">
+                        {% for seat in row.seats %}
+                        {% if not seat.exists %}
+                        <span class="seat seat-gap"></span>
+                        {% elif seat.status == "sold" %}
+                        <span class="seat seat-sold" title="Продано"></span>
+                        {% else %}
+                        <form method="post" action="/tickets/purchase" class="seat-form">
+                            <input type="hidden" name="setting_idx" value="{{ hall_view.setting_idx }}">
+                            <input type="hidden" name="hall_id" value="{{ hall_view.hall_id }}">
+                            <input type="hidden" name="ticket_id" value="{{ seat.ticket_id }}">
+                            <button
+                                type="submit"
+                                class="seat seat-available"
+                                title="Сектор {{ seat.sector_label }}, ряд {{ seat.row_label }}, место {{ seat.seat_label }}, {{ '%.0f'|format(seat.price) }} руб."
+                            ></button>
+                        </form>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+</body>
+</html>

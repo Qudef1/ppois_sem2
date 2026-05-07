@@ -1,6 +1,6 @@
 from fastapi.templating import Jinja2Templates
 
-from app.theater_service import TheaterService
+from app.services.theater import TheaterService
 
 
 class AppContainer:

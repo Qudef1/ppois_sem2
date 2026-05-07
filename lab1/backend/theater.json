@@ -1,0 +1,31 @@
+{
+    "__type__": "theater",
+    "name": "Default Theater",
+    "staff_manager": {
+        "__type__": "staff_manager",
+        "staff": []
+    },
+    "performance_manager": {
+        "__type__": "performance_manager",
+        "settings": [],
+        "repetitions": []
+    },
+    "ticket_manager": {
+        "__type__": "ticket_manager",
+        "tickets": []
+    },
+    "resource_manager": {
+        "__type__": "resource_manager",
+        "stages": [],
+        "costume_rooms": [],
+        "costumes": [
+            {
+                "__type__": "costume",
+                "name": "Антон",
+                "size": "S",
+                "color": "blue"
+            }
+        ],
+        "halls": []
+    }
+}

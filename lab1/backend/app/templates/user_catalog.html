@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Афиша — {{ name }}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header-row">
+        <div>
+            <h1>Афиша театра: {{ name }}</h1>
+            <p>Выберите постановку и перейдите к выбору мест.</p>
+        </div>
+        <a class="btn-link" href="/">Версия для персонала</a>
+    </header>
+
+    {% if message %}
+    <section class="message {% if is_error %}error{% else %}success{% endif %}">
+        {{ message }}
+    </section>
+    {% endif %}
+
+    <section class="poster-grid">
+        {% for item in settings_catalog %}
+        <article class="card poster-card">
+            <h3>{{ item.name }}</h3>
+            <p>Дата: {{ item.date[:10] }}</p>
+            <p>Режиссер: {{ item.director }}</p>
+            <p>Длительность: {{ item.duration_hours }} ч</p>
+            <p>Залов: {{ item.halls|length }}</p>
+            <p>Билетов: {{ item.available_tickets }} / {{ item.total_tickets }}</p>
+            <p>Цена от: {{ "%.0f"|format(item.min_price) }} руб.</p>
+            <a class="btn-link block" href="/tickets/setting/{{ item.setting_idx }}" target="_blank">
+                Выбрать места
+            </a>
+        </article>
+        {% else %}
+        <article class="card">
+            <h3>Постановок для продажи пока нет</h3>
+            <p>Сначала добавьте постановки и привяжите их к залу в версии для персонала.</p>
+        </article>
+        {% endfor %}
+    </section>
+</main>
+</body>
+</html>

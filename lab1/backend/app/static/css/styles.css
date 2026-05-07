@@ -94,3 +94,111 @@ td {
         grid-template-columns: 1fr;
     }
 }
+
+.header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.btn-link {
+    display: inline-block;
+    text-decoration: none;
+    background: #0f766e;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.btn-link.block {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.poster-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.poster-card {
+    min-height: 220px;
+}
+
+.inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.hall-sectors {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+.sector {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fafafa;
+}
+
+.seat-row {
+    display: grid;
+    grid-template-columns: 58px 1fr;
+    align-items: center;
+    gap: 6px;
+    margin: 5px 0;
+}
+
+.row-label {
+    font-size: 12px;
+    color: #475569;
+}
+
+.seats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.seat-form {
+    display: inline;
+}
+
+.seat {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border-radius: 4px;
+    display: inline-block;
+    border: none;
+}
+
+.seat-available {
+    background: #16a34a;
+    cursor: pointer;
+}
+
+.seat-sold {
+    background: #dc2626;
+}
+
+.seat-gap {
+    background: #cbd5e1;
+}
+
+@media (max-width: 900px) {
+    .poster-grid {
+        grid-template-columns: 1fr;
+    }
+}
